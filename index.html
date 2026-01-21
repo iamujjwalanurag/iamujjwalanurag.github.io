@@ -1,34 +1,84 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ujjwal Anurag- The Entrepreneur With Vision</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Digitale — Simple Digital Products Shop</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header>
-    <h1>Ujjwal Anurag</h1>
-    <nav>
-      <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="shop.html">Shop</a></li>
-        <li><a href="cart.html">Cart</a></li>
-        <li><a href="checkout.html">Checkout</a></li>
-      </ul>
-    </nav>
+  <header class="site-header">
+    <div class="brand">
+      <svg class="logo" width="36" height="36" viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="3" y="3" width="18" height="18" rx="4" fill="#4f46e5"></rect>
+        <path d="M7 12h10" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+      <h1>Digitale</h1>
+    </div>
+    <div class="controls">
+      <input id="search" type="search" placeholder="Search products..." aria-label="Search products" />
+      <button id="cartBtn" class="cart-btn" aria-label="Open cart">
+        Cart <span id="cartCount">0</span>
+      </button>
+    </div>
   </header>
-  <section class="hero">
-    <h2>Welcome to E-Shop</h2>
-    <p>Discover amazing products!</p>
-    <a href="shop.html" class="btn">Shop Now</a>
-  </section>
-  <section class="products" id="featured">
-    <h2>Featured Products</h2>
-    <!-- Products rendered by JS -->
-  </section>
-  <footer>&copy; 2025 E-Shop</footer>
-  <script src="script.js"></script>
-  <script>renderProducts('#featured');</script>
+
+  <main class="main">
+    <aside class="filters">
+      <h2>Categories</h2>
+      <div id="tags" class="tags"></div>
+      <hr />
+      <h3>About</h3>
+      <p>Small demo shop for selling digital products (ebooks, templates, assets). Add to cart and checkout to get download links.</p>
+    </aside>
+
+    <section class="catalog">
+      <div class="hero">
+        <h2>Digital products built for creators</h2>
+        <p>Explore downloadable ebooks, UI kits, templates and more.</p>
+      </div>
+
+      <div id="productGrid" class="grid" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <aside id="cart" class="cart-panel" aria-hidden="true">
+    <button id="closeCart" class="close">×</button>
+    <h3>Your Cart</h3>
+    <div id="cartItems" class="cart-items"></div>
+    <div class="cart-summary">
+      <div>Total: <strong id="cartTotal">$0.00</strong></div>
+      <button id="checkoutBtn" class="btn primary" disabled>Checkout</button>
+    </div>
+    <hr />
+    <div>
+      <h4>Purchases</h4>
+      <div id="purchases" class="purchases"></div>
+    </div>
+  </aside>
+
+  <!-- Simple checkout modal -->
+  <div id="checkoutModal" class="modal" role="dialog" aria-hidden="true" aria-modal="true">
+    <div class="modal-content">
+      <button id="closeModal" class="close">×</button>
+      <h3>Checkout</h3>
+      <div id="checkoutList"></div>
+      <div class="form-row">
+        <label for="email">Email for receipts / download links</label>
+        <input id="email" type="email" placeholder="you@example.com" />
+      </div>
+      <div class="actions">
+        <button id="payBtn" class="btn primary">Simulate Payment</button>
+        <button id="cancelBtn" class="btn">Cancel</button>
+      </div>
+      <div id="checkoutMessage" class="muted"></div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <small>Made with ♥ for demo purposes — no real payments.</small>
+  </footer>
+
+  <script src="app.js" defer></script>
 </body>
 </html>
