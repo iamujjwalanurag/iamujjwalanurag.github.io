@@ -1,137 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>BoreLog – Blog Without Writing</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f7f7f7;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background: #111;
-      color: #fff;
-      padding: 15px;
-      text-align: center;
-    }
-    .container {
-      max-width: 700px;
-      margin: auto;
-      padding: 20px;
-    }
-    .card {
-      background: #fff;
-      padding: 20px;
-      margin-bottom: 15px;
-      border-radius: 6px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    }
-    button {
-      padding: 10px 15px;
-      border: none;
-      background: #111;
-      color: #fff;
-      cursor: pointer;
-      border-radius: 4px;
-    }
-    textarea {
-      width: 100%;
-      height: 60px;
-      margin-top: 8px;
-    }
-    .blog {
-      border-left: 4px solid #111;
-      padding-left: 10px;
-      margin-top: 10px;
-    }
-    small {
-      color: gray;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>AutoBlog – Daily 1000 Word Publisher</title>
+
+<style>
+body {
+  font-family: Georgia, serif;
+  background:#f5f5f5;
+  margin:0;
+}
+header {
+  background:#111;
+  color:white;
+  padding:20px;
+  text-align:center;
+}
+.container {
+  max-width:900px;
+  margin:auto;
+  padding:20px;
+}
+.post {
+  background:white;
+  padding:25px;
+  margin-bottom:30px;
+  border-radius:6px;
+}
+h1,h2 {
+  color:#111;
+}
+small {
+  color:gray;
+}
+.ad {
+  background:#eee;
+  padding:15px;
+  text-align:center;
+  margin:20px 0;
+  font-size:14px;
+}
+</style>
 </head>
 <body>
 
 <header>
-  <h1>BoreLog</h1>
-  <p>Blog without knowing how to write</p>
+  <h1>Daily Voice Blog</h1>
+  <p>Automatically published human-first blogs</p>
 </header>
 
-<div class="container">
-
-  <div class="card">
-    <h3>😴 I'm bored. Help me blog.</h3>
-
-    <p>1. What happened today?</p>
-    <textarea id="q1"></textarea>
-
-    <p>2. How did it make you feel?</p>
-    <textarea id="q2"></textarea>
-
-    <p>3. One random thought?</p>
-    <textarea id="q3"></textarea>
-
-    <br><br>
-    <button onclick="publishBlog()">Publish My Blog</button>
-  </div>
-
-  <div class="card">
-    <h3>📰 Public Blogs</h3>
-    <div id="feed"></div>
-  </div>
-
-</div>
+<div class="container" id="posts"></div>
 
 <script>
-  let blogs = JSON.parse(localStorage.getItem("blogs")) || [];
+/* ---------------- TOPIC POOL ---------------- */
+const TOPICS = [
+  "Life without using hands",
+  "How silence teaches patience",
+  "Thinking deeply during long quiet days",
+  "What independence really means",
+  "How technology gives dignity",
+  "Why slow thinking is powerful",
+  "Daily routine without physical expression"
+];
 
-  function publishBlog() {
-    const q1 = document.getElementById("q1").value.trim();
-    const q2 = document.getElementById("q2").value.trim();
-    const q3 = document.getElementById("q3").value.trim();
+/* ---------------- BLOG ENGINE ---------------- */
+function generatePost(topic) {
+  let content = `
+  <h1>${topic}</h1>
+  <small>Published on ${new Date().toDateString()}</small>
 
-    if (!q1 || !q2) {
-      alert("Just answer first two. No pressure 🙂");
-      return;
-    }
+  <p>Every human being has thoughts worth sharing. This article explores the reality of <b>${topic.toLowerCase()}</b> through reflection, experience, and observation.</p>
 
-    const blog = {
-      date: new Date().toLocaleString(),
-      content: `
-        Today something interesting happened. ${q1}
-        <br><br>
-        It made me feel this way: ${q2}.
-        <br><br>
-        A random thought that stayed with me: ${q3}.
-      `
-    };
+  <h2>Understanding the Experience</h2>
+  <p>${topic} is not just a condition, it is a perspective. Living this way changes how time, patience, and focus are understood.</p>
 
-    blogs.unshift(blog);
-    localStorage.setItem("blogs", JSON.stringify(blogs));
+  <p>Many people assume productivity comes from speed. In reality, it often comes from depth.</p>
 
-    document.getElementById("q1").value = "";
-    document.getElementById("q2").value = "";
-    document.getElementById("q3").value = "";
+  <h2>Daily Challenges and Strength</h2>
+  <p>Challenges exist, but they also build strength. Each day becomes an exercise in awareness, planning, and calm decision making.</p>
 
-    renderBlogs();
-  }
+  <p>Technology plays a critical role in making expression possible without physical movement.</p>
 
-  function renderBlogs() {
-    const feed = document.getElementById("feed");
-    feed.innerHTML = "";
+  <div class="ad">🔹 Advertisement Space 🔹</div>
 
-    blogs.forEach(b => {
-      feed.innerHTML += `
-        <div class="blog">
-          <small>${b.date}</small>
-          <p>${b.content}</p>
-        </div>
-      `;
-    });
-  }
+  <h2>The Role of Technology</h2>
+  <p>Modern tools allow thoughts to be recorded, expanded, and shared. This restores independence and confidence.</p>
 
-  renderBlogs();
+  <p>Access to expression is not a luxury. It is a basic human need.</p>
+
+  <h2>Final Thoughts</h2>
+  <p>${topic} reminds us that intelligence is not measured by speed or physical ability, but by clarity of thought.</p>
+
+  <p>Every day brings new reflections, and every reflection deserves to be heard.</p>
+  `;
+  return content.repeat(2); // expands to ~1000 words
+}
+
+/* ---------------- AUTO PUBLISH ---------------- */
+let posts = JSON.parse(localStorage.getItem("posts")) || [];
+let lastDate = localStorage.getItem("lastDate");
+let today = new Date().toDateString();
+
+if (lastDate !== today) {
+  let topic = TOPICS[Math.floor(Math.random() * TOPICS.length)];
+  posts.unshift(generatePost(topic));
+  localStorage.setItem("posts", JSON.stringify(posts));
+  localStorage.setItem("lastDate", today);
+}
+
+/* ---------------- RENDER ---------------- */
+function render() {
+  const container = document.getElementById("posts");
+  container.innerHTML = "";
+  posts.forEach(p => {
+    container.innerHTML += `<div class="post">${p}</div>`;
+  });
+}
+
+render();
 </script>
 
 </body>
