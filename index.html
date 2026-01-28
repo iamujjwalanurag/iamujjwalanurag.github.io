@@ -2,211 +2,159 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Google-Safe Auto Blog Engine</title>
+<title>Auto Blog Engine</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Daily auto-published SEO blogs using Google Trends.">
+<meta name="description" content="Google-safe daily auto blog">
+
+<link rel="manifest" href="data:application/json,{
+  &quot;name&quot;:&quot;AutoBlog&quot;,
+  &quot;short_name&quot;:&quot;AutoBlog&quot;,
+  &quot;start_url&quot;:&quot;.&quot;,
+  &quot;display&quot;:&quot;standalone&quot;
+}">
+<meta name="theme-color" content="#111">
 
 <style>
-body{
-  font-family: Georgia, serif;
-  background:#f4f4f4;
-  margin:0;
-}
-header{
-  background:#111;
-  color:#fff;
-  padding:20px;
-  text-align:center;
-}
-.container{
-  max-width:900px;
-  margin:auto;
-  padding:20px;
-}
-.post{
-  background:#fff;
-  padding:25px;
-  margin-bottom:40px;
-  border-radius:6px;
-}
-h1,h2{
-  color:#111;
-}
-small{
-  color:gray;
-}
-.ad{
-  background:#eee;
-  padding:15px;
-  text-align:center;
-  margin:25px 0;
-  font-size:14px;
-}
-button{
-  padding:10px 15px;
-  border:none;
-  background:#111;
-  color:#fff;
-  cursor:pointer;
-  border-radius:4px;
-}
-.status{
-  margin:15px 0;
-  font-size:14px;
-}
+body{margin:0;font-family:Georgia,serif;background:#f4f4f4}
+header{background:#111;color:#fff;padding:20px;text-align:center}
+.container{max-width:900px;margin:auto;padding:20px}
+.post{background:#fff;padding:25px;margin-bottom:40px;border-radius:6px}
+button,select{padding:10px 15px;background:#111;color:#fff;border:none;border-radius:4px;cursor:pointer}
+small{color:gray}
+.ad{background:#eee;padding:15px;margin:25px 0;text-align:center}
+.switch{background:#ddd;color:#000;margin:5px}
 </style>
 </head>
+
 <body>
 
 <header>
-  <h1>Daily Voice Blog</h1>
-  <p>Google-safe · Auto-published · SEO-ready</p>
+  <h1 id="brandName">Daily Voice Blog</h1>
+  <p id="brandTagline">Google-safe · Auto-published · Accessible</p>
 </header>
 
 <div class="container">
-  <button onclick="runAutoSystem()">▶ Run Daily Auto Publish</button>
-  <div class="status" id="status"></div>
-  <div id="posts"></div>
+
+<select onchange="setLang(this.value)">
+  <option value="en">English</option>
+  <option value="hi">हिन्दी</option>
+</select>
+
+<button onclick="runSystem()">▶ Run Auto System</button>
+
+<h3>Accessibility Input</h3>
+<button class="switch" onclick="binary(true)">YES</button>
+<button class="switch" onclick="binary(false)">NO</button>
+
+<p id="status"></p>
+<div id="posts"></div>
+
 </div>
 
 <script>
-/* ================= GOOGLE TRENDS RSS (CORS FIXED) ================= */
-const GOOGLE_TRENDS_RSS =
-  "https://api.allorigins.win/raw?url=" +
-  encodeURIComponent(
-    "https://trends.google.com/trends/trendingsearches/daily/rss?geo=IN"
-  );
+/* ========= BRAND ========= */
+const BRAND={name:"Daily Voice Blog",tagline:"Google-safe · Auto-published · Accessible"};
+brandName.innerText=BRAND.name;
+brandTagline.innerText=BRAND.tagline;
 
-/* ================= FALLBACK TOPICS (SAFE MODE) ================= */
-const FALLBACK_TOPICS = [
-  "Assistive technology for communication",
-  "How people express thoughts without speech",
-  "Accessibility technology changing daily life",
-  "Life experience without physical expression",
-  "Why inclusive technology matters today"
+/* ========= LANGUAGE ========= */
+let LANG="en";
+const TEXT={en:{final:"Final Thoughts"},hi:{final:"अंतिम विचार"}};
+function setLang(l){LANG=l;render();}
+
+/* ========= GOOGLE TRENDS (CHANGE TO YOUR WORKER URL FOR 100%) ========= */
+const TRENDS_URL="https://api.allorigins.win/raw?url="+
+encodeURIComponent("https://trends.google.com/trends/trendingsearches/daily/rss?geo=IN");
+
+/* ========= FALLBACK ========= */
+const FALLBACK=[
+  "Accessibility technology in daily life",
+  "Expressing thoughts without speech",
+  "Inclusive technology in India",
+  "Human thinking beyond physical limits"
 ];
 
-/* ================= KEYWORD EXPANSION ================= */
-function expandKeywords(topic){
+/* ========= KEYWORDS ========= */
+function expand(t){
   return [
-    `What is ${topic}`,
-    `Why ${topic} is important`,
-    `How ${topic} affects daily life`,
-    `Challenges related to ${topic}`,
-    `Future scope of ${topic}`
+    `What is ${t}`,
+    `Why ${t} matters`,
+    `How ${t} affects life`,
+    `Challenges of ${t}`,
+    `Future of ${t}`
   ];
 }
 
-/* ================= BLOG GENERATOR ================= */
-function generateBlog(topic){
-  const sections = expandKeywords(topic);
-  let html = `
-  <h1>${topic}</h1>
-  <small>Published on ${new Date().toDateString()}</small>
-
-  <p>This article explores <b>${topic}</b> from a practical, human-first perspective. The goal is clarity, accessibility, and long-term usefulness.</p>
-  `;
-
-  sections.forEach(sec=>{
-    html += `
-    <h2>${sec}</h2>
-    <p>${sec} is a key part of understanding ${topic}. This section explains it in simple language using real-world context.</p>
-    <p>Experience and observation show that ${topic} influences how people adapt, think, and communicate in everyday life.</p>
-    `;
+/* ========= BLOG ========= */
+function blog(topic){
+  let h=`<h1>${topic}</h1><small>${new Date().toDateString()}</small>`;
+  expand(topic).forEach(s=>{
+    h+=`<h2>${s}</h2>
+        <p>${s} explains ${topic} in simple human language.</p>
+        <p>Real experience adds depth and understanding.</p>`;
   });
-
-  html += `
-  <div class="ad">🔹 Advertisement Space 🔹</div>
-
-  <h2>Final Thoughts</h2>
-  <p>${topic} is not just a trending phrase. It reflects deeper changes in society, technology, and inclusion.</p>
-
-  <p>Consistent publishing builds understanding, trust, and long-term value.</p>
-  `;
-
-  return html.repeat(2); // ~1000 words
+  h+=`<div class="ad">Advertisement</div>
+      <h2>${TEXT[LANG].final}</h2>
+      <p>${topic} reflects deeper social and technological change.</p>`;
+  return h.repeat(2);
 }
 
-/* ================= STORAGE ================= */
-let posts = JSON.parse(localStorage.getItem("posts")) || [];
-let lastDate = localStorage.getItem("lastDate");
+/* ========= STORAGE ========= */
+let posts=JSON.parse(localStorage.getItem("posts"))||[];
+let last=localStorage.getItem("last");
 
-/* ================= AUTO PUBLISH ================= */
-function autoPublish(topic){
-  const today = new Date().toDateString();
-  if(lastDate === today) return;
-
-  posts.unshift(generateBlog(topic));
-  localStorage.setItem("posts", JSON.stringify(posts));
-  localStorage.setItem("lastDate", today);
+/* ========= AUTO PUBLISH ========= */
+function publish(topic){
+  let d=new Date().toDateString();
+  if(last===d)return;
+  posts.unshift(blog(topic));
+  localStorage.setItem("posts",JSON.stringify(posts));
+  localStorage.setItem("last",d);
 }
 
-/* ================= PROCESS TOPICS ================= */
-function processTopics(topics){
-  const clean = topics.filter(
-    t => t.length > 10 && !t.match(/vs|match|movie|score|result/i)
-  );
-
-  const topic = clean.length
-    ? clean[Math.floor(Math.random() * clean.length)]
-    : FALLBACK_TOPICS[Math.floor(Math.random() * FALLBACK_TOPICS.length)];
-
-  autoPublish(topic);
-  render();
-  document.getElementById("status").innerText =
-    "Auto-published today’s blog ✔️";
-}
-
-/* ================= RUN SYSTEM ================= */
-function runAutoSystem(){
-  document.getElementById("status").innerText =
-    "Fetching Google Trends…";
-
-  fetch(GOOGLE_TRENDS_RSS)
-    .then(res => res.text())
-    .then(xml => {
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(xml, "text/xml");
-      const titles = [...doc.querySelectorAll("item title")]
-        .map(i => i.textContent);
-
-      processTopics(titles);
+/* ========= RUN SYSTEM ========= */
+function runSystem(){
+  status.innerText="Running…";
+  fetch(TRENDS_URL)
+    .then(r=>r.text())
+    .then(x=>{
+      let doc=new DOMParser().parseFromString(x,"text/xml");
+      let t=[...doc.querySelectorAll("item title")].map(i=>i.textContent);
+      let clean=t.filter(a=>a.length>10);
+      let topic=clean.length?clean[Math.floor(Math.random()*clean.length)]
+                            :FALLBACK[Math.floor(Math.random()*FALLBACK.length)];
+      publish(topic);render();
+      status.innerText="Published ✔️";
     })
     .catch(()=>{
-      document.getElementById("status").innerText =
-        "Google Trends unavailable. Using safe fallback topics.";
-      processTopics([]);
+      publish(FALLBACK[Math.floor(Math.random()*FALLBACK.length)]);
+      render();
+      status.innerText="Fallback used ✔️";
     });
 }
 
-/* ================= RENDER POSTS ================= */
+/* ========= ACCESSIBILITY ========= */
+let decisions=[];
+function binary(v){
+  decisions.push(v);
+  if(decisions.length>=5){
+    publish(FALLBACK[decisions.filter(Boolean).length%FALLBACK.length]);
+    decisions=[];render();
+  }
+}
+
+/* ========= RENDER ========= */
 function render(){
-  const container = document.getElementById("posts");
-  container.innerHTML = "";
-  posts.forEach(p=>{
-    container.innerHTML += `<div class="post">${p}</div>`;
-  });
+  postsDiv=posts.map(p=>`<div class="post">${p}</div>`).join("");
+  document.getElementById("posts").innerHTML=postsDiv;
 }
 render();
 
-/* ================= SITEMAP GENERATOR ================= */
-function generateSitemap(){
-  let urls = posts.map((_,i)=>`
-<url>
-  <loc>https://yourdomain.com/post-${i}.html</loc>
-  <changefreq>daily</changefreq>
-  <priority>0.8</priority>
-</url>`).join("");
-
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls}
-</urlset>`;
+/* ========= SITEMAP ========= */
+function sitemap(){
+  return posts.map((_,i)=>`/post-${i}.html`).join("\n");
 }
-
-/* Optional: View sitemap in console */
-console.log("SITEMAP.XML ↓↓↓");
-console.log(generateSitemap());
+console.log("SITEMAP:\n"+sitemap());
 </script>
 
 </body>
