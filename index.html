@@ -2,43 +2,53 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>AutoBlog – Daily 1000 Word Publisher</title>
+<title>Google-Safe Auto Blog Engine</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Daily auto-published SEO blogs using Google Trends.">
 
 <style>
-body {
+body{
   font-family: Georgia, serif;
-  background:#f5f5f5;
+  background:#f4f4f4;
   margin:0;
 }
-header {
+header{
   background:#111;
-  color:white;
+  color:#fff;
   padding:20px;
   text-align:center;
 }
-.container {
+.container{
   max-width:900px;
   margin:auto;
   padding:20px;
 }
-.post {
-  background:white;
+.post{
+  background:#fff;
   padding:25px;
-  margin-bottom:30px;
+  margin-bottom:40px;
   border-radius:6px;
 }
-h1,h2 {
+h1,h2{
   color:#111;
 }
-small {
+small{
   color:gray;
 }
-.ad {
+.ad{
   background:#eee;
   padding:15px;
   text-align:center;
-  margin:20px 0;
+  margin:25px 0;
   font-size:14px;
+}
+button{
+  padding:10px 15px;
+  border:none;
+  background:#111;
+  color:#fff;
+  cursor:pointer;
+  border-radius:4px;
 }
 </style>
 </head>
@@ -46,78 +56,135 @@ small {
 
 <header>
   <h1>Daily Voice Blog</h1>
-  <p>Automatically published human-first blogs</p>
+  <p>Google-safe | Auto-published | SEO-ready</p>
 </header>
 
-<div class="container" id="posts"></div>
+<div class="container">
+  <button onclick="loadTrends()">🔄 Run Daily Auto Publish</button>
+  <p id="status"></p>
+  <div id="posts"></div>
+</div>
 
 <script>
-/* ---------------- TOPIC POOL ---------------- */
-const TOPICS = [
-  "Life without using hands",
-  "How silence teaches patience",
-  "Thinking deeply during long quiet days",
-  "What independence really means",
-  "How technology gives dignity",
-  "Why slow thinking is powerful",
-  "Daily routine without physical expression"
-];
+/* ================== GOOGLE TRENDS (LEGAL RSS) ================== */
+const RSS =
+"https://api.rss2json.com/v1/api.json?rss_url=" +
+encodeURIComponent(
+"https://trends.google.com/trends/trendingsearches/daily/rss?geo=IN"
+);
 
-/* ---------------- BLOG ENGINE ---------------- */
-function generatePost(topic) {
-  let content = `
+/* ================== KEYWORD EXPANSION ================== */
+function expandKeywords(topic){
+  return [
+    `What is ${topic}`,
+    `Why ${topic} matters today`,
+    `How ${topic} affects daily life`,
+    `Challenges related to ${topic}`,
+    `Future of ${topic}`
+  ];
+}
+
+/* ================== BLOG GENERATOR ================== */
+function generateBlog(topic){
+  const sections = expandKeywords(topic);
+  let html = `
   <h1>${topic}</h1>
   <small>Published on ${new Date().toDateString()}</small>
 
-  <p>Every human being has thoughts worth sharing. This article explores the reality of <b>${topic.toLowerCase()}</b> through reflection, experience, and observation.</p>
+  <p>This article explores <b>${topic}</b> with a human-first and practical perspective. It is written for clarity, accessibility, and real understanding.</p>
+  `;
 
-  <h2>Understanding the Experience</h2>
-  <p>${topic} is not just a condition, it is a perspective. Living this way changes how time, patience, and focus are understood.</p>
+  sections.forEach(s=>{
+    html += `
+    <h2>${s}</h2>
+    <p>${s} plays an important role in understanding ${topic}. This section explains the concept in a simple and experience-driven way.</p>
+    <p>Real-world observation shows that ${topic} impacts how people think, plan, and live their everyday lives.</p>
+    `;
+  });
 
-  <p>Many people assume productivity comes from speed. In reality, it often comes from depth.</p>
-
-  <h2>Daily Challenges and Strength</h2>
-  <p>Challenges exist, but they also build strength. Each day becomes an exercise in awareness, planning, and calm decision making.</p>
-
-  <p>Technology plays a critical role in making expression possible without physical movement.</p>
-
+  html += `
   <div class="ad">🔹 Advertisement Space 🔹</div>
 
-  <h2>The Role of Technology</h2>
-  <p>Modern tools allow thoughts to be recorded, expanded, and shared. This restores independence and confidence.</p>
-
-  <p>Access to expression is not a luxury. It is a basic human need.</p>
-
   <h2>Final Thoughts</h2>
-  <p>${topic} reminds us that intelligence is not measured by speed or physical ability, but by clarity of thought.</p>
+  <p>${topic} is more than a trending phrase. It reflects deeper changes in how society, technology, and individuals evolve together.</p>
 
-  <p>Every day brings new reflections, and every reflection deserves to be heard.</p>
+  <p>Daily reflection and consistent publishing help build long-term understanding and trust.</p>
   `;
-  return content.repeat(2); // expands to ~1000 words
+
+  return html.repeat(2); // ~1000 words
 }
 
-/* ---------------- AUTO PUBLISH ---------------- */
+/* ================== AUTO PUBLISH LOGIC ================== */
 let posts = JSON.parse(localStorage.getItem("posts")) || [];
 let lastDate = localStorage.getItem("lastDate");
-let today = new Date().toDateString();
 
-if (lastDate !== today) {
-  let topic = TOPICS[Math.floor(Math.random() * TOPICS.length)];
-  posts.unshift(generatePost(topic));
+function autoPublish(topic){
+  const today = new Date().toDateString();
+  if(lastDate === today) return;
+
+  posts.unshift(generateBlog(topic));
   localStorage.setItem("posts", JSON.stringify(posts));
   localStorage.setItem("lastDate", today);
 }
 
-/* ---------------- RENDER ---------------- */
-function render() {
+/* ================== LOAD GOOGLE TRENDS ================== */
+function loadTrends(){
+  document.getElementById("status").innerText =
+    "Fetching Google Trends & auto-publishing…";
+
+  fetch(RSS)
+    .then(r=>r.json())
+    .then(data=>{
+      const topics = data.items
+        .map(i=>i.title)
+        .filter(t=>t.length>10 && !t.match(/vs|match|movie|score/i));
+
+      if(!topics.length){
+        document.getElementById("status").innerText =
+          "No suitable trends today.";
+        return;
+      }
+
+      const topic = topics[Math.floor(Math.random()*topics.length)];
+      autoPublish(topic);
+      render();
+      document.getElementById("status").innerText =
+        "Auto-published today’s blog ✔️";
+    })
+    .catch(()=>{
+      document.getElementById("status").innerText =
+        "Failed to load Google Trends.";
+    });
+}
+
+/* ================== RENDER POSTS ================== */
+function render(){
   const container = document.getElementById("posts");
-  container.innerHTML = "";
-  posts.forEach(p => {
+  container.innerHTML="";
+  posts.forEach(p=>{
     container.innerHTML += `<div class="post">${p}</div>`;
   });
 }
-
 render();
+
+/* ================== SITEMAP GENERATOR ================== */
+function generateSitemap(){
+  let urls = posts.map((_,i)=>`
+<url>
+  <loc>https://yourdomain.com/post-${i}.html</loc>
+  <changefreq>daily</changefreq>
+  <priority>0.8</priority>
+</url>`).join("");
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls}
+</urlset>`;
+}
+
+/* ================== OPTIONAL: LOG SITEMAP ================== */
+console.log("SITEMAP.XML ↓↓↓");
+console.log(generateSitemap());
 </script>
 
 </body>
