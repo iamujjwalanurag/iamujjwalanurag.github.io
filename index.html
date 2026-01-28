@@ -1,160 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Auto Blog Engine</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Google-safe daily auto blog">
+  <meta charset="UTF-8" />
+  <title>Learner at Success – Senior Comfort Wear</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link rel="manifest" href="data:application/json,{
-  &quot;name&quot;:&quot;AutoBlog&quot;,
-  &quot;short_name&quot;:&quot;AutoBlog&quot;,
-  &quot;start_url&quot;:&quot;.&quot;,
-  &quot;display&quot;:&quot;standalone&quot;
-}">
-<meta name="theme-color" content="#111">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f9f9f9;
+      color: #333;
+    }
 
-<style>
-body{margin:0;font-family:Georgia,serif;background:#f4f4f4}
-header{background:#111;color:#fff;padding:20px;text-align:center}
-.container{max-width:900px;margin:auto;padding:20px}
-.post{background:#fff;padding:25px;margin-bottom:40px;border-radius:6px}
-button,select{padding:10px 15px;background:#111;color:#fff;border:none;border-radius:4px;cursor:pointer}
-small{color:gray}
-.ad{background:#eee;padding:15px;margin:25px 0;text-align:center}
-.switch{background:#ddd;color:#000;margin:5px}
-</style>
+    header {
+      background: #2b6777;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 32px;
+      margin: 0;
+    }
+
+    header p {
+      font-size: 18px;
+      margin-top: 8px;
+    }
+
+    .container {
+      padding: 20px;
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .card h3 {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      font-size: 18px;
+    }
+
+    .price {
+      font-size: 20px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      font-size: 18px;
+      background: #52ab98;
+      border: none;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #3d8f7a;
+    }
+
+    .cart {
+      margin-top: 30px;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    .cart h2 {
+      font-size: 26px;
+    }
+
+    .cart-item {
+      font-size: 18px;
+      margin: 8px 0;
+    }
+
+    footer {
+      background: #2b6777;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      margin-top: 40px;
+      font-size: 16px;
+    }
+  </style>
 </head>
 
 <body>
 
 <header>
-  <h1 id="brandName">Daily Voice Blog</h1>
-  <p id="brandTagline">Google-safe · Auto-published · Accessible</p>
+  <h1>Learner at Success</h1>
+  <p>Comfort T-Shirts Made for Seniors</p>
 </header>
 
 <div class="container">
 
-<select onchange="setLang(this.value)">
-  <option value="en">English</option>
-  <option value="hi">हिन्दी</option>
-</select>
+  <h2 style="font-size:28px;">Our Products</h2>
 
-<button onclick="runSystem()">▶ Run Auto System</button>
+  <div class="products">
 
-<h3>Accessibility Input</h3>
-<button class="switch" onclick="binary(true)">YES</button>
-<button class="switch" onclick="binary(false)">NO</button>
+    <div class="card">
+      <h3>Classic Comfort Tee</h3>
+      <p>Soft cotton, relaxed fit</p>
+      <div class="price">₹799</div>
+      <button onclick="addToCart('Classic Comfort Tee', 799)">Add to Cart</button>
+    </div>
 
-<p id="status"></p>
-<div id="posts"></div>
+    <div class="card">
+      <h3>Wisdom Quote Tee</h3>
+      <p>“Experience is my strength”</p>
+      <div class="price">₹899</div>
+      <button onclick="addToCart('Wisdom Quote Tee', 899)">Add to Cart</button>
+    </div>
+
+    <div class="card">
+      <h3>Gift for Parents</h3>
+      <p>Perfect comfort gift</p>
+      <div class="price">₹999</div>
+      <button onclick="addToCart('Gift for Parents Tee', 999)">Add to Cart</button>
+    </div>
+
+  </div>
+
+  <div class="cart">
+    <h2>Your Cart</h2>
+    <div id="cartItems">No items added.</div>
+    <h3 id="totalAmount"></h3>
+  </div>
 
 </div>
 
+<footer>
+  © 2026 Learner at Success • Built for Seniors with Respect
+</footer>
+
 <script>
-/* ========= BRAND ========= */
-const BRAND={name:"Daily Voice Blog",tagline:"Google-safe · Auto-published · Accessible"};
-brandName.innerText=BRAND.name;
-brandTagline.innerText=BRAND.tagline;
+  let cart = [];
+  let total = 0;
 
-/* ========= LANGUAGE ========= */
-let LANG="en";
-const TEXT={en:{final:"Final Thoughts"},hi:{final:"अंतिम विचार"}};
-function setLang(l){LANG=l;render();}
-
-/* ========= GOOGLE TRENDS (CHANGE TO YOUR WORKER URL FOR 100%) ========= */
-const TRENDS_URL="https://api.allorigins.win/raw?url="+
-encodeURIComponent("https://trends.google.com/trends/trendingsearches/daily/rss?geo=IN");
-
-/* ========= FALLBACK ========= */
-const FALLBACK=[
-  "Accessibility technology in daily life",
-  "Expressing thoughts without speech",
-  "Inclusive technology in India",
-  "Human thinking beyond physical limits"
-];
-
-/* ========= KEYWORDS ========= */
-function expand(t){
-  return [
-    `What is ${t}`,
-    `Why ${t} matters`,
-    `How ${t} affects life`,
-    `Challenges of ${t}`,
-    `Future of ${t}`
-  ];
-}
-
-/* ========= BLOG ========= */
-function blog(topic){
-  let h=`<h1>${topic}</h1><small>${new Date().toDateString()}</small>`;
-  expand(topic).forEach(s=>{
-    h+=`<h2>${s}</h2>
-        <p>${s} explains ${topic} in simple human language.</p>
-        <p>Real experience adds depth and understanding.</p>`;
-  });
-  h+=`<div class="ad">Advertisement</div>
-      <h2>${TEXT[LANG].final}</h2>
-      <p>${topic} reflects deeper social and technological change.</p>`;
-  return h.repeat(2);
-}
-
-/* ========= STORAGE ========= */
-let posts=JSON.parse(localStorage.getItem("posts"))||[];
-let last=localStorage.getItem("last");
-
-/* ========= AUTO PUBLISH ========= */
-function publish(topic){
-  let d=new Date().toDateString();
-  if(last===d)return;
-  posts.unshift(blog(topic));
-  localStorage.setItem("posts",JSON.stringify(posts));
-  localStorage.setItem("last",d);
-}
-
-/* ========= RUN SYSTEM ========= */
-function runSystem(){
-  status.innerText="Running…";
-  fetch(TRENDS_URL)
-    .then(r=>r.text())
-    .then(x=>{
-      let doc=new DOMParser().parseFromString(x,"text/xml");
-      let t=[...doc.querySelectorAll("item title")].map(i=>i.textContent);
-      let clean=t.filter(a=>a.length>10);
-      let topic=clean.length?clean[Math.floor(Math.random()*clean.length)]
-                            :FALLBACK[Math.floor(Math.random()*FALLBACK.length)];
-      publish(topic);render();
-      status.innerText="Published ✔️";
-    })
-    .catch(()=>{
-      publish(FALLBACK[Math.floor(Math.random()*FALLBACK.length)]);
-      render();
-      status.innerText="Fallback used ✔️";
-    });
-}
-
-/* ========= ACCESSIBILITY ========= */
-let decisions=[];
-function binary(v){
-  decisions.push(v);
-  if(decisions.length>=5){
-    publish(FALLBACK[decisions.filter(Boolean).length%FALLBACK.length]);
-    decisions=[];render();
+  function addToCart(name, price) {
+    cart.push({ name, price });
+    total += price;
+    renderCart();
   }
-}
 
-/* ========= RENDER ========= */
-function render(){
-  postsDiv=posts.map(p=>`<div class="post">${p}</div>`).join("");
-  document.getElementById("posts").innerHTML=postsDiv;
-}
-render();
+  function renderCart() {
+    const cartDiv = document.getElementById("cartItems");
+    cartDiv.innerHTML = "";
 
-/* ========= SITEMAP ========= */
-function sitemap(){
-  return posts.map((_,i)=>`/post-${i}.html`).join("\n");
-}
-console.log("SITEMAP:\n"+sitemap());
+    cart.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "cart-item";
+      div.textContent = item.name + " – ₹" + item.price;
+      cartDiv.appendChild(div);
+    });
+
+    document.getElementById("totalAmount").textContent =
+      "Total: ₹" + total;
+  }
 </script>
 
 </body>
