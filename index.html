@@ -2,180 +2,146 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Colleague Talk – MVP</title>
+<title>SkillVerify – Prove Your Skills</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background: #f4f6f8;
-        margin: 0;
-        padding: 0;
-    }
-    header {
-        background: #1f2937;
-        color: #fff;
-        padding: 15px;
-        text-align: center;
-    }
-    .container {
-        max-width: 900px;
-        margin: 20px auto;
-        background: #fff;
-        border-radius: 8px;
-        padding: 20px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    .login, .chat {
-        display: none;
-    }
-    input, select, button {
-        padding: 10px;
-        margin: 5px 0;
-        width: 100%;
-    }
-    button {
-        background: #2563eb;
-        color: #fff;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-    button.locked {
-        background: #9ca3af;
-        cursor: not-allowed;
-    }
-    .badge {
-        display: inline-block;
-        background: #10b981;
-        color: #fff;
-        padding: 4px 8px;
-        border-radius: 12px;
-        font-size: 12px;
-        margin-left: 5px;
-    }
-    .role {
-        font-size: 14px;
-        color: #6b7280;
-    }
-    .messages {
-        border: 1px solid #e5e7eb;
-        height: 250px;
-        overflow-y: auto;
-        padding: 10px;
-        margin-bottom: 10px;
-    }
-    .msg {
-        margin-bottom: 8px;
-    }
-    .tone {
-        font-size: 12px;
-        color: #2563eb;
-    }
-    .system {
-        color: #ef4444;
-        font-size: 13px;
-    }
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f7fa;
+  margin: 0;
+  padding: 0;
+}
+header {
+  background: #1e40af;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+section {
+  padding: 20px;
+  max-width: 800px;
+  margin: auto;
+}
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+input, select, button {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+}
+button {
+  background: #1e40af;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+button:hover {
+  background: #1e3a8a;
+}
+.skill {
+  display: inline-block;
+  background: #e0e7ff;
+  padding: 5px 10px;
+  border-radius: 20px;
+  margin: 5px;
+}
+.badge {
+  color: green;
+  font-weight: bold;
+}
+footer {
+  text-align: center;
+  padding: 15px;
+  color: gray;
+}
 </style>
 </head>
+
 <body>
 
 <header>
-    <h2>Colleague Talk</h2>
-    <p>Verified communication for real workplaces</p>
+  <h1>SkillVerify</h1>
+  <p>Prove your skills. Don’t just claim them.</p>
 </header>
 
-<div class="container">
+<section>
 
-    <!-- LOGIN -->
-    <div class="login" id="login">
-        <h3>Employee Login</h3>
-        <input id="name" placeholder="Your name">
-        <select id="role">
-            <option>Employee</option>
-            <option>Manager</option>
-            <option>HR</option>
-        </select>
-        <button onclick="login()">Enter Workspace</button>
-    </div>
+<div class="card">
+  <h2>Create Your Skill Profile</h2>
+  <input type="text" id="name" placeholder="Your Name">
+  <input type="text" id="role" placeholder="Desired Role (e.g. HR Executive)">
+  
+  <select id="skill">
+    <option value="">Select Skill</option>
+    <option>English Communication</option>
+    <option>Sales</option>
+    <option>Web Development</option>
+    <option>Customer Support</option>
+    <option>Marketing</option>
+  </select>
 
-    <!-- CHAT -->
-    <div class="chat" id="chat">
-        <h3>
-            <span id="username"></span>
-            <span class="badge">✔ Verified</span>
-        </h3>
-        <div class="role" id="userrole"></div>
-
-        <hr>
-
-        <label>Communication Tone</label>
-        <select id="tone">
-            <option>Professional</option>
-            <option>Friendly</option>
-            <option>Direct</option>
-        </select>
-
-        <div class="messages" id="messages"></div>
-
-        <input id="message" placeholder="Type your message...">
-        <button onclick="sendMessage()">Send</button>
-
-        <hr>
-
-        <button class="locked" onclick="authorityAction()">📢 Company Announcement (Authority)</button>
-        <p class="system">Authority features require upgrade (simulation).</p>
-    </div>
-
+  <button onclick="addSkill()">Add Skill</button>
 </div>
 
+<div class="card">
+  <h2>Your Profile</h2>
+  <p><strong>Name:</strong> <span id="pname">—</span></p>
+  <p><strong>Role:</strong> <span id="prole">—</span></p>
+  <p><strong>Skills:</strong></p>
+  <div id="skills"></div>
+  <p class="badge">✔ Verified Skill Profile (Demo)</p>
+  <button onclick="shareProfile()">Generate Share Link</button>
+  <p id="share"></p>
+</div>
+
+</section>
+
+<footer>
+  © 2026 SkillVerify – MVP Prototype
+</footer>
+
 <script>
-    let user = {};
+let skillList = [];
 
-    document.getElementById("login").style.display = "block";
+function addSkill() {
+  const skill = document.getElementById("skill").value;
+  const name = document.getElementById("name").value;
+  const role = document.getElementById("role").value;
 
-    function login() {
-        const name = document.getElementById("name").value;
-        const role = document.getElementById("role").value;
+  if (!skill || !name || !role) {
+    alert("Fill all details");
+    return;
+  }
 
-        if (!name) {
-            alert("Enter your name");
-            return;
-        }
+  document.getElementById("pname").innerText = name;
+  document.getElementById("prole").innerText = role;
 
-        user = {
-            name,
-            role,
-            verified: true,
-            authority: false // paid feature
-        };
+  skillList.push(skill);
+  renderSkills();
+}
 
-        document.getElementById("login").style.display = "none";
-        document.getElementById("chat").style.display = "block";
+function renderSkills() {
+  const container = document.getElementById("skills");
+  container.innerHTML = "";
+  skillList.forEach(s => {
+    const div = document.createElement("div");
+    div.className = "skill";
+    div.innerText = s;
+    container.appendChild(div);
+  });
+}
 
-        document.getElementById("username").innerText = user.name;
-        document.getElementById("userrole").innerText =
-            user.role + " · Verified Badge (Free)";
-    }
-
-    function sendMessage() {
-        const msg = document.getElementById("message").value;
-        const tone = document.getElementById("tone").value;
-
-        if (!msg) return;
-
-        const box = document.getElementById("messages");
-        const div = document.createElement("div");
-        div.className = "msg";
-        div.innerHTML = `<strong>${user.name}</strong> 
-            <span class="tone">[${tone}]</span><br>${msg}`;
-        box.appendChild(div);
-
-        document.getElementById("message").value = "";
-        box.scrollTop = box.scrollHeight;
-    }
-
-    function authorityAction() {
-        alert("Authority feature locked.\nVerified badge is free.\nAuthority is a paid upgrade.");
-    }
+function shareProfile() {
+  const link = "https://skillverify.app/profile/" + Math.random().toString(36).substring(7);
+  document.getElementById("share").innerHTML =
+    Share this link: <br><strong>${link}</strong>;
+}
 </script>
 
 </body>
