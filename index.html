@@ -1,140 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>VoiceLog – Enterprise Reflection Tool</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #f4f6f8;
-    margin: 0;
-  }
-  header {
-    background: #0b3c5d;
-    color: #fff;
-    padding: 15px;
-    text-align: center;
-  }
-  .container {
-    max-width: 700px;
-    margin: auto;
-    padding: 20px;
-  }
-  .card {
-    background: #fff;
-    padding: 20px;
-    border-radius: 6px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  }
-  button {
-    padding: 10px 15px;
-    background: #0b3c5d;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  textarea {
-    width: 100%;
-    height: 80px;
-    margin-top: 10px;
-  }
-  .blog {
-    border-left: 4px solid #0b3c5d;
-    padding-left: 10px;
-    margin-top: 10px;
-  }
-  small {
-    color: gray;
-  }
-</style>
+  <meta charset="UTF-8">
+  <title>BoreLog – Blog Without Writing</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #111;
+      color: #fff;
+      padding: 15px;
+      text-align: center;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      padding: 20px;
+    }
+    .card {
+      background: #fff;
+      padding: 20px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    button {
+      padding: 10px 15px;
+      border: none;
+      background: #111;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    textarea {
+      width: 100%;
+      height: 60px;
+      margin-top: 8px;
+    }
+    .blog {
+      border-left: 4px solid #111;
+      padding-left: 10px;
+      margin-top: 10px;
+    }
+    small {
+      color: gray;
+    }
+  </style>
 </head>
 <body>
 
 <header>
-  <h2>🎙️ VoiceLog</h2>
-  <p>Enterprise Voice-to-Reflection Platform</p>
+  <h1>BoreLog</h1>
+  <p>Blog without knowing how to write</p>
 </header>
 
 <div class="container">
 
   <div class="card">
-    <h3>Speak freely (Hindi / English)</h3>
-    <p>Just talk. No writing needed.</p>
+    <h3>😴 I'm bored. Help me blog.</h3>
 
-    <button onclick="startVoice()">🎤 Start Speaking</button>
-    <textarea id="voiceText" placeholder="Your voice will appear here..."></textarea>
+    <p>1. What happened today?</p>
+    <textarea id="q1"></textarea>
+
+    <p>2. How did it make you feel?</p>
+    <textarea id="q2"></textarea>
+
+    <p>3. One random thought?</p>
+    <textarea id="q3"></textarea>
 
     <br><br>
-    <button onclick="publish()">Publish Reflection</button>
+    <button onclick="publishBlog()">Publish My Blog</button>
   </div>
 
   <div class="card">
-    <h3>📊 Team Reflections</h3>
+    <h3>📰 Public Blogs</h3>
     <div id="feed"></div>
   </div>
 
 </div>
 
 <script>
-let reflections = JSON.parse(localStorage.getItem("reflections")) || [];
-let recognition;
+  let blogs = JSON.parse(localStorage.getItem("blogs")) || [];
 
-function startVoice() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SpeechRecognition();
-  recognition.lang = "hi-IN"; // Hindi (handles Hinglish too)
-  recognition.interimResults = false;
+  function publishBlog() {
+    const q1 = document.getElementById("q1").value.trim();
+    const q2 = document.getElementById("q2").value.trim();
+    const q3 = document.getElementById("q3").value.trim();
 
-  recognition.onresult = function(event) {
-    document.getElementById("voiceText").value =
-      event.results[0][0].transcript;
-  };
+    if (!q1 || !q2) {
+      alert("Just answer first two. No pressure 🙂");
+      return;
+    }
 
-  recognition.start();
-}
+    const blog = {
+      date: new Date().toLocaleString(),
+      content: `
+        Today something interesting happened. ${q1}
+        <br><br>
+        It made me feel this way: ${q2}.
+        <br><br>
+        A random thought that stayed with me: ${q3}.
+      `
+    };
 
-function publish() {
-  const text = document.getElementById("voiceText").value.trim();
-  if (!text) {
-    alert("Please speak something 🙂");
-    return;
+    blogs.unshift(blog);
+    localStorage.setItem("blogs", JSON.stringify(blogs));
+
+    document.getElementById("q1").value = "";
+    document.getElementById("q2").value = "";
+    document.getElementById("q3").value = "";
+
+    renderBlogs();
   }
 
-  const reflection = {
-    date: new Date().toLocaleString(),
-    content: `
-      Today I would like to share something.
-      <br><br>
-      ${text}
-      <br><br>
-      This reflection captures my experience and thoughts.
-    `
-  };
+  function renderBlogs() {
+    const feed = document.getElementById("feed");
+    feed.innerHTML = "";
 
-  reflections.unshift(reflection);
-  localStorage.setItem("reflections", JSON.stringify(reflections));
+    blogs.forEach(b => {
+      feed.innerHTML += `
+        <div class="blog">
+          <small>${b.date}</small>
+          <p>${b.content}</p>
+        </div>
+      `;
+    });
+  }
 
-  document.getElementById("voiceText").value = "";
-  render();
-}
-
-function render() {
-  const feed = document.getElementById("feed");
-  feed.innerHTML = "";
-
-  reflections.forEach(r => {
-    feed.innerHTML += `
-      <div class="blog">
-        <small>${r.date}</small>
-        <p>${r.content}</p>
-      </div>
-    `;
-  });
-}
-
-render();
+  renderBlogs();
 </script>
 
 </body>
