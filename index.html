@@ -1,147 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>SkillVerify – Prove Your Skills</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simple Job Search Engine</title>
+  <style>
+    * { box-sizing: border-box; font-family: Arial, sans-serif; }
+    body { margin: 0; background: #f4f6f8; }
+    header { background: #1e88e5; color: white; padding: 20px; text-align: center; }
+    .container { max-width: 1000px; margin: auto; padding: 20px; }
 
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f5f7fa;
-  margin: 0;
-  padding: 0;
-}
-header {
-  background: #1e40af;
-  color: white;
-  padding: 20px;
-  text-align: center;
-}
-section {
-  padding: 20px;
-  max-width: 800px;
-  margin: auto;
-}
-.card {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-input, select, button {
-  width: 100%;
-  padding: 10px;
-  margin: 8px 0;
-}
-button {
-  background: #1e40af;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-button:hover {
-  background: #1e3a8a;
-}
-.skill {
-  display: inline-block;
-  background: #e0e7ff;
-  padding: 5px 10px;
-  border-radius: 20px;
-  margin: 5px;
-}
-.badge {
-  color: green;
-  font-weight: bold;
-}
-footer {
-  text-align: center;
-  padding: 15px;
-  color: gray;
-}
-</style>
+    .search-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input, select, button {
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    button {
+      background: #1e88e5;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover { background: #1565c0; }
+
+    .job-card {
+      background: white;
+      padding: 16px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      margin-bottom: 15px;
+    }
+
+    .job-card h3 { margin: 0; color: #1e88e5; }
+    .job-card p { margin: 6px 0; color: #555; }
+
+    .tag {
+      display: inline-block;
+      background: #e3f2fd;
+      color: #1e88e5;
+      padding: 4px 8px;
+      border-radius: 5px;
+      font-size: 12px;
+      margin-right: 5px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      color: #777;
+    }
+  </style>
 </head>
-
 <body>
 
 <header>
-  <h1>SkillVerify</h1>
-  <p>Prove your skills. Don’t just claim them.</p>
+  <h1>Job Search Engine</h1>
+  <p>Find jobs by skill, role, or location</p>
 </header>
 
-<section>
+<div class="container">
+  <div class="search-box">
+    <input type="text" id="keyword" placeholder="Job title or skill (e.g. JavaScript)" />
+    <select id="location">
+      <option value="">All Locations</option>
+      <option value="Delhi">Delhi</option>
+      <option value="Bangalore">Bangalore</option>
+      <option value="Remote">Remote</option>
+    </select>
+    <button onclick="searchJobs()">Search</button>
+  </div>
 
-<div class="card">
-  <h2>Create Your Skill Profile</h2>
-  <input type="text" id="name" placeholder="Your Name">
-  <input type="text" id="role" placeholder="Desired Role (e.g. HR Executive)">
-  
-  <select id="skill">
-    <option value="">Select Skill</option>
-    <option>English Communication</option>
-    <option>Sales</option>
-    <option>Web Development</option>
-    <option>Customer Support</option>
-    <option>Marketing</option>
-  </select>
-
-  <button onclick="addSkill()">Add Skill</button>
+  <div id="jobs"></div>
 </div>
-
-<div class="card">
-  <h2>Your Profile</h2>
-  <p><strong>Name:</strong> <span id="pname">—</span></p>
-  <p><strong>Role:</strong> <span id="prole">—</span></p>
-  <p><strong>Skills:</strong></p>
-  <div id="skills"></div>
-  <p class="badge">✔ Verified Skill Profile (Demo)</p>
-  <button onclick="shareProfile()">Generate Share Link</button>
-  <p id="share"></p>
-</div>
-
-</section>
 
 <footer>
-  © 2026 SkillVerify – MVP Prototype
+  © 2026 JobSearch • Built with HTML, CSS & JavaScript
 </footer>
 
 <script>
-let skillList = [];
+  const jobData = [
+    { title: "Frontend Developer", company: "TechSoft", location: "Bangalore", skills: ["HTML", "CSS", "JavaScript"] },
+    { title: "Backend Developer", company: "CodeWorks", location: "Delhi", skills: ["Node.js", "Express", "MongoDB"] },
+    { title: "Full Stack Developer", company: "StartupX", location: "Remote", skills: ["React", "Node.js"] },
+    { title: "UI Designer", company: "DesignPro", location: "Remote", skills: ["Figma", "CSS"] }
+  ];
 
-function addSkill() {
-  const skill = document.getElementById("skill").value;
-  const name = document.getElementById("name").value;
-  const role = document.getElementById("role").value;
+  function displayJobs(jobs) {
+    const container = document.getElementById("jobs");
+    container.innerHTML = "";
 
-  if (!skill || !name || !role) {
-    alert("Fill all details");
-    return;
+    if (jobs.length === 0) {
+      container.innerHTML = "<p>No jobs found.</p>";
+      return;
+    }
+
+    jobs.forEach(job => {
+      const div = document.createElement("div");
+      div.className = "job-card";
+      div.innerHTML = `
+        <h3>${job.title}</h3>
+        <p><strong>${job.company}</strong> • ${job.location}</p>
+        <div>${job.skills.map(s => `<span class='tag'>${s}</span>`).join("")}</div>
+      `;
+      container.appendChild(div);
+    });
   }
 
-  document.getElementById("pname").innerText = name;
-  document.getElementById("prole").innerText = role;
+  function searchJobs() {
+    const keyword = document.getElementById("keyword").value.toLowerCase();
+    const location = document.getElementById("location").value;
 
-  skillList.push(skill);
-  renderSkills();
-}
+    const filtered = jobData.filter(job => {
+      const matchKeyword = job.title.toLowerCase().includes(keyword) ||
+        job.skills.join(" ").toLowerCase().includes(keyword);
+      const matchLocation = location === "" || job.location === location;
+      return matchKeyword && matchLocation;
+    });
 
-function renderSkills() {
-  const container = document.getElementById("skills");
-  container.innerHTML = "";
-  skillList.forEach(s => {
-    const div = document.createElement("div");
-    div.className = "skill";
-    div.innerText = s;
-    container.appendChild(div);
-  });
-}
+    displayJobs(filtered);
+  }
 
-function shareProfile() {
-  const link = "https://skillverify.app/profile/" + Math.random().toString(36).substring(7);
-  document.getElementById("share").innerHTML =
-    Share this link: <br><strong>${link}</strong>;
-}
+  // Load all jobs initially
+  displayJobs(jobData);
 </script>
 
 </body>
