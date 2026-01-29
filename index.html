@@ -2,73 +2,125 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Colleague Job Portal</title>
+<title>Colleague – Jobs & Confidence</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
-body{background:#fff;color:#111}
+:root{
+  --primary:#4f46e5;
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --text:#0f172a;
+  --muted:#64748b;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,system-ui}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+}
 
 header{
-  padding:20px 40px;
-  border-bottom:1px solid #eee;
+  background:#fff;
+  padding:16px 30px;
   display:flex;
   justify-content:space-between;
   align-items:center;
+  border-bottom:1px solid #e5e7eb;
+  position:sticky;
+  top:0;
+}
+
+header b{
+  font-size:20px;
+  color:var(--primary);
+}
+
+nav button{
+  margin-left:8px;
 }
 
 button{
-  background:#111;
+  background:var(--primary);
   color:#fff;
   border:none;
-  padding:10px 14px;
-  border-radius:6px;
+  padding:10px 16px;
+  border-radius:8px;
+  font-weight:500;
   cursor:pointer;
 }
 
-input,select{
-  padding:10px;
-  border:1px solid #ddd;
-  border-radius:6px;
-  width:100%;
+button.secondary{
+  background:#e0e7ff;
+  color:var(--primary);
 }
 
-.container{max-width:1100px;margin:30px auto;padding:0 20px}
+input,select,textarea{
+  width:100%;
+  padding:12px;
+  border-radius:8px;
+  border:1px solid #e5e7eb;
+  margin-top:10px;
+}
 
-.hidden{display:none}
+.container{
+  max-width:1100px;
+  margin:40px auto;
+  padding:0 20px;
+}
 
-nav button{margin-left:10px}
+.hero{
+  background:linear-gradient(135deg,#6366f1,#4f46e5);
+  color:#fff;
+  padding:50px;
+  border-radius:20px;
+  margin-bottom:40px;
+}
 
-.jobs{
+.hero h1{font-size:36px;margin-bottom:10px}
+.hero p{opacity:.9}
+
+.grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:20px;
+  grid-template-columns:2fr 1fr;
+  gap:30px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,.05);
+  margin-bottom:25px;
 }
 
 .job{
-  border:1px solid #eee;
+  border:1px solid #e5e7eb;
   padding:20px;
-  border-radius:10px;
+  border-radius:14px;
+  margin-bottom:20px;
 }
 
-.job h3{margin-bottom:5px}
-.job p{font-size:14px;color:#444;margin:10px 0}
-
-form{
-  border:1px solid #eee;
-  padding:20px;
-  border-radius:10px;
-  margin-bottom:30px;
+.job.featured{
+  border:2px solid var(--primary);
 }
 
-form h2{margin-bottom:15px}
+.job h3{margin-bottom:6px}
+.job small{color:var(--muted)}
+.job p{margin:10px 0;color:#334155}
+
+.hidden{display:none}
 
 footer{
   text-align:center;
-  padding:20px;
-  border-top:1px solid #eee;
-  color:#777;
+  padding:30px;
+  color:var(--muted);
   margin-top:60px;
+}
+
+@media(max-width:900px){
+  .grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -76,126 +128,138 @@ footer{
 <body>
 
 <header>
-  <h1>Colleague Jobs</h1>
-  <nav>
-    <span id="userStatus">Guest</span>
-    <button onclick="showLogin()">Login</button>
+  <b>Colleague</b>
+  <div>
+    <span id="userLabel">Guest</span>
+    <button class="secondary" onclick="toggleLogin()">Login</button>
     <button onclick="logout()">Logout</button>
-  </nav>
+  </div>
 </header>
 
 <div class="container">
 
-<!-- LOGIN -->
-<form id="loginBox" class="hidden">
-  <h2>Login</h2>
+<div class="hero">
+  <h1>Find Jobs with Confidence</h1>
+  <p>Simple words. Clear interviews. Better careers.</p>
+</div>
+
+<div class="grid">
+
+<!-- LEFT -->
+<div>
+
+<div class="card">
+  <input id="search" placeholder="Search job title">
+  <button style="margin-top:10px" onclick="searchJobs()">Search</button>
+</div>
+
+<div id="jobs"></div>
+
+</div>
+
+<!-- RIGHT -->
+<div>
+
+<div id="loginBox" class="card hidden">
+  <h3>Login</h3>
+  <input id="name" placeholder="Your name">
   <select id="role">
     <option value="candidate">Candidate</option>
     <option value="employer">Employer</option>
-  </select><br><br>
-  <input placeholder="Your Name" id="username"><br><br>
-  <button type="button" onclick="login()">Login</button>
-</form>
-
-<!-- POST JOB -->
-<form id="postJob" class="hidden">
-  <h2>Post a Job (Employer)</h2>
-  <input placeholder="Job Title" id="jTitle"><br><br>
-  <input placeholder="Company" id="jCompany"><br><br>
-  <input placeholder="Location" id="jLocation"><br><br>
-  <input placeholder="Description" id="jDesc"><br><br>
-  <button type="button" onclick="addJob()">Post Job</button>
-</form>
-
-<!-- SEARCH -->
-<div style="display:flex;gap:10px;margin-bottom:20px">
-  <input placeholder="Search job title" id="search">
-  <input placeholder="Location" id="filterLocation">
-  <button onclick="filterJobs()">Search</button>
+    <option value="admin">Admin</option>
+  </select>
+  <button style="margin-top:10px" onclick="login()">Continue</button>
 </div>
 
-<!-- JOB LIST -->
-<div class="jobs" id="jobList"></div>
+<div id="postJob" class="card hidden">
+  <h3>Post a Job</h3>
+  <input id="title" placeholder="Job title">
+  <input id="company" placeholder="Company">
+  <input id="location" placeholder="Location">
+  <textarea id="desc" placeholder="Job description"></textarea>
+  <button style="margin-top:10px" onclick="addJob()">Post Job</button>
+</div>
+
+<div class="card">
+  <h3>Interview Confidence</h3>
+  <p><b>HR Question:</b> Tell me about yourself</p>
+  <p class="muted">They want a short story about your skills.</p>
+  <hr style="margin:15px 0">
+  <p><b>HR Word:</b> Strengths</p>
+  <p class="muted">Things you do well at work.</p>
+</div>
+
+</div>
+
+</div>
 
 </div>
 
 <footer>
-© 2026 Colleague.co.in — Confidence to Careers
+© 2026 Colleague.co.in
 </footer>
 
 <script>
-let currentUser=null;
-let currentRole=null;
-
-let jobs=[
-  {title:"Frontend Developer",company:"TechSoft",location:"Remote",desc:"HTML CSS JS"},
-  {title:"HR Executive",company:"PeopleFirst",location:"Delhi",desc:"Hiring & HR ops"},
-  {title:"Backend Developer",company:"CodeWorks",location:"Bangalore",desc:"Node APIs"}
+let user=null,role=null;
+let jobs=JSON.parse(localStorage.getItem("jobs"))||[
+  {title:"Frontend Developer",company:"TechSoft",location:"Remote",desc:"HTML CSS JS",featured:true},
+  {title:"HR Executive",company:"PeopleFirst",location:"Delhi",desc:"Hiring",featured:false}
 ];
 
-function showLogin(){
-  document.getElementById("loginBox").classList.toggle("hidden");
-}
+function toggleLogin(){loginBox.classList.toggle("hidden")}
 
 function login(){
-  currentUser=username.value;
-  currentRole=role.value;
-  userStatus.innerText=currentUser+" ("+currentRole+")";
+  user=name.value; role=roleSelect=role=document.getElementById("role").value;
+  userLabel.innerText=user+" ("+role+")";
   loginBox.classList.add("hidden");
-  if(currentRole==="employer") postJob.classList.remove("hidden");
+  if(role==="employer") postJob.classList.remove("hidden");
+  render(jobs);
 }
 
 function logout(){
-  currentUser=null;
-  currentRole=null;
-  userStatus.innerText="Guest";
+  user=null; role=null;
+  userLabel.innerText="Guest";
   postJob.classList.add("hidden");
 }
 
 function addJob(){
-  jobs.push({
-    title:jTitle.value,
-    company:jCompany.value,
-    location:jLocation.value,
-    desc:jDesc.value
-  });
-  alert("Job posted successfully");
-  renderJobs(jobs);
+  jobs.push({title:title.value,company:company.value,location:location.value,desc:desc.value,featured:false});
+  save(); render(jobs);
 }
 
-function apply(title){
-  if(!currentUser){
-    alert("Please login first");
-    return;
-  }
-  alert("Applied for "+title+" 🎉");
+function apply(t){
+  if(!user){alert("Login first");return;}
+  alert("Applied to "+t+" 🎉");
 }
 
-function filterJobs(){
-  const s=search.value.toLowerCase();
-  const l=filterLocation.value.toLowerCase();
-  const filtered=jobs.filter(j=>
-    j.title.toLowerCase().includes(s) &&
-    j.location.toLowerCase().includes(l)
-  );
-  renderJobs(filtered);
+function feature(i){
+  jobs[i].featured=true;
+  save(); render(jobs);
 }
 
-function renderJobs(list){
-  jobList.innerHTML="";
-  list.forEach(j=>{
-    jobList.innerHTML+=`
-      <div class="job">
-        <h3>${j.title}</h3>
-        <small>${j.company} • ${j.location}</small>
-        <p>${j.desc}</p>
-        <input type="file"><br><br>
-        <button onclick="apply('${j.title}')">Apply</button>
-      </div>`;
+function searchJobs(){
+  let q=search.value.toLowerCase();
+  render(jobs.filter(j=>j.title.toLowerCase().includes(q)));
+}
+
+function render(list){
+  jobsDiv.innerHTML="";
+  list.forEach((j,i)=>{
+    jobsDiv.innerHTML+=`
+    <div class="job ${j.featured?'featured':''}">
+      <h3>${j.title}</h3>
+      <small>${j.company} • ${j.location}</small>
+      <p>${j.desc}</p>
+      <input type="file">
+      <button onclick="apply('${j.title}')">Apply</button>
+      ${role==="admin"?`<button class="secondary" onclick="feature(${i})">Feature</button>`:""}
+    </div>`;
   });
 }
 
-renderJobs(jobs);
+function save(){localStorage.setItem("jobs",JSON.stringify(jobs))}
+const jobsDiv=document.getElementById("jobs");
+render(jobs);
 </script>
 
 </body>
