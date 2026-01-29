@@ -1,137 +1,196 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Simple Job Search Engine</title>
-  <style>
-    * { box-sizing: border-box; font-family: Arial, sans-serif; }
-    body { margin: 0; background: #f4f6f8; }
-    header { background: #1e88e5; color: white; padding: 20px; text-align: center; }
-    .container { max-width: 1000px; margin: auto; padding: 20px; }
+<meta charset="UTF-8">
+<title>Language Intelligence Engine v200</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    .search-box {
-      display: grid;
-      grid-template-columns: 1fr 1fr auto;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    input, select, button {
-      padding: 12px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-    }
-
-    button {
-      background: #1e88e5;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-
-    button:hover { background: #1565c0; }
-
-    .job-card {
-      background: white;
-      padding: 16px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-      margin-bottom: 15px;
-    }
-
-    .job-card h3 { margin: 0; color: #1e88e5; }
-    .job-card p { margin: 6px 0; color: #555; }
-
-    .tag {
-      display: inline-block;
-      background: #e3f2fd;
-      color: #1e88e5;
-      padding: 4px 8px;
-      border-radius: 5px;
-      font-size: 12px;
-      margin-right: 5px;
-    }
-
-    footer {
-      text-align: center;
-      padding: 15px;
-      color: #777;
-    }
-  </style>
+<style>
+body{
+  font-family: system-ui, sans-serif;
+  background:#f2f4f7;
+  padding:20px;
+}
+.app{
+  max-width:1100px;
+  margin:auto;
+  background:#fff;
+  padding:20px;
+  border-radius:10px;
+}
+h1,h2{text-align:center;}
+p.sub{text-align:center;font-size:14px;color:#555;}
+.notice{
+  background:#eef3ff;
+  padding:12px;
+  border-radius:6px;
+  font-size:13px;
+}
+textarea,input,select,button{
+  width:100%;
+  padding:12px;
+  margin-top:8px;
+  font-size:15px;
+}
+button{
+  background:#000;
+  color:#fff;
+  border:none;
+  cursor:pointer;
+}
+.card{
+  background:#fafafa;
+  padding:12px;
+  border-radius:6px;
+  margin-top:12px;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:12px;
+}
+th,td{
+  padding:10px;
+  border-bottom:1px solid #ddd;
+  font-size:14px;
+}
+.good{color:#2e7d32;}
+.mid{color:#f9a825;}
+.low{color:#c62828;}
+.small{font-size:13px;color:#666;}
+</style>
 </head>
+
 <body>
 
-<header>
-  <h1>Job Search Engine</h1>
-  <p>Find jobs by skill, role, or location</p>
-</header>
+<div class="app">
 
-<div class="container">
-  <div class="search-box">
-    <input type="text" id="keyword" placeholder="Job title or skill (e.g. JavaScript)" />
-    <select id="location">
-      <option value="">All Locations</option>
-      <option value="Delhi">Delhi</option>
-      <option value="Bangalore">Bangalore</option>
-      <option value="Remote">Remote</option>
-    </select>
-    <button onclick="searchJobs()">Search</button>
-  </div>
+<h1>Language Intelligence Engine</h1>
+<p class="sub">Version 200 · Operational Stability</p>
 
-  <div id="jobs"></div>
+<div class="notice">
+Tracks improvement trends in expression readiness.  
+No ranking. No English scoring. No embarrassment.
 </div>
 
-<footer>
-  © 2026 JobSearch • Built with HTML, CSS & JavaScript
-</footer>
+<hr>
+
+<h2>Participant Session</h2>
+
+<input id="pid" placeholder="Participant ID (required)">
+<textarea id="response" placeholder="Describe a responsibility you handled."></textarea>
+<button onclick="evaluate()">Submit Session</button>
+
+<div id="privateFeedback"></div>
+
+<hr>
+
+<h2>Trainer View (Trend Summary)</h2>
+
+<table>
+<thead>
+<tr>
+<th>Participant</th>
+<th>Recall Trend</th>
+<th>Precision Trend</th>
+<th>Overall Status</th>
+</tr>
+</thead>
+<tbody id="trainerTable"></tbody>
+</table>
+
+</div>
 
 <script>
-  const jobData = [
-    { title: "Frontend Developer", company: "TechSoft", location: "Bangalore", skills: ["HTML", "CSS", "JavaScript"] },
-    { title: "Backend Developer", company: "CodeWorks", location: "Delhi", skills: ["Node.js", "Express", "MongoDB"] },
-    { title: "Full Stack Developer", company: "StartupX", location: "Remote", skills: ["React", "Node.js"] },
-    { title: "UI Designer", company: "DesignPro", location: "Remote", skills: ["Figma", "CSS"] }
-  ];
+/* ================= CORE DATA ================= */
 
-  function displayJobs(jobs) {
-    const container = document.getElementById("jobs");
-    container.innerHTML = "";
+const weakWords={
+  "do":"handle","did":"handled","thing":"task","things":"responsibilities",
+  "make":"create","fix":"resolve","help":"assist","get":"obtain",
+  "work":"execute","worked":"contributed"
+};
 
-    if (jobs.length === 0) {
-      container.innerHTML = "<p>No jobs found.</p>";
-      return;
-    }
+let startTime=null;
+let history=JSON.parse(localStorage.getItem("li-history"))||{};
 
-    jobs.forEach(job => {
-      const div = document.createElement("div");
-      div.className = "job-card";
-      div.innerHTML = `
-        <h3>${job.title}</h3>
-        <p><strong>${job.company}</strong> • ${job.location}</p>
-        <div>${job.skills.map(s => `<span class='tag'>${s}</span>`).join("")}</div>
-      `;
-      container.appendChild(div);
-    });
-  }
+/* ================= TIMER ================= */
+response.addEventListener("focus",()=>{
+  if(!startTime) startTime=Date.now();
+});
 
-  function searchJobs() {
-    const keyword = document.getElementById("keyword").value.toLowerCase();
-    const location = document.getElementById("location").value;
+/* ================= EVALUATE ================= */
+function evaluate(){
+  const id=pid.value.trim();
+  const text=response.value.trim().toLowerCase();
+  if(!id||!text||!startTime)return;
 
-    const filtered = jobData.filter(job => {
-      const matchKeyword = job.title.toLowerCase().includes(keyword) ||
-        job.skills.join(" ").toLowerCase().includes(keyword);
-      const matchLocation = location === "" || job.location === location;
-      return matchKeyword && matchLocation;
-    });
+  const time=(Date.now()-startTime)/1000;
+  const words=text.split(/\s+/);
 
-    displayJobs(filtered);
-  }
+  let weakCount=0;
+  words.forEach(w=>{if(weakWords[w])weakCount++;});
 
-  // Load all jobs initially
-  displayJobs(jobData);
+  const recall=time<4?"Stable":time<8?"Moderate":"Unstable";
+  const precision=weakCount===0?"Clear":weakCount<=2?"Developing":"Weak";
+
+  if(!history[id])history[id]=[];
+  history[id].push({recall,precision});
+  localStorage.setItem("li-history",JSON.stringify(history));
+
+  privateFeedback.innerHTML=`
+    <div class="card">
+      <b>Private Feedback</b><br>
+      Recall: ${recall}<br>
+      Precision: ${precision}
+    </div>
+  `;
+
+  response.value="";
+  pid.value="";
+  startTime=null;
+  renderTrainer();
+}
+
+/* ================= TREND LOGIC ================= */
+function trend(values){
+  if(values.length<2)return "Baseline";
+  const last=values[values.length-1];
+  const prev=values[values.length-2];
+  if(last===prev)return "Stable";
+  if((prev==="Unstable"||prev==="Developing") &&
+     (last==="Moderate"||last==="Clear"))return "Improving";
+  return "Needs Support";
+}
+
+/* ================= TRAINER VIEW ================= */
+function renderTrainer(){
+  trainerTable.innerHTML="";
+  Object.keys(history).forEach(id=>{
+    const recalls=history[id].map(x=>x.recall);
+    const precisions=history[id].map(x=>x.precision);
+
+    const rTrend=trend(recalls);
+    const pTrend=trend(precisions);
+
+    let status="Stable";
+    if(rTrend==="Improving"||pTrend==="Improving")status="Improving";
+    if(rTrend==="Needs Support"||pTrend==="Needs Support")status="Needs Support";
+
+    const tr=document.createElement("tr");
+    tr.innerHTML=`
+      <td>${id}</td>
+      <td>${rTrend}</td>
+      <td>${pTrend}</td>
+      <td class="${
+        status==="Improving"?"good":
+        status==="Stable"?"mid":"low"
+      }">${status}</td>
+    `;
+    trainerTable.appendChild(tr);
+  });
+}
+
+renderTrainer();
 </script>
 
 </body>
