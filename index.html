@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Language Intelligence Engine v200</title>
+<title>Language Intelligence Engine v100</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
@@ -18,13 +18,20 @@ body{
   padding:20px;
   border-radius:10px;
 }
-h1,h2{text-align:center;}
-p.sub{text-align:center;font-size:14px;color:#555;}
+h1,h2{
+  text-align:center;
+}
+p.sub{
+  text-align:center;
+  font-size:14px;
+  color:#555;
+}
 .notice{
   background:#eef3ff;
   padding:12px;
   border-radius:6px;
   font-size:13px;
+  margin-bottom:10px;
 }
 textarea,input,select,button{
   width:100%;
@@ -66,131 +73,126 @@ th,td{
 <div class="app">
 
 <h1>Language Intelligence Engine</h1>
-<p class="sub">Version 200 · Operational Stability</p>
+<p class="sub">Version 100 · Confidence Readiness Infrastructure</p>
 
 <div class="notice">
-Tracks improvement trends in expression readiness.  
-No ranking. No English scoring. No embarrassment.
+This system observes expression readiness under pressure.  
+It does not score English, rank people, or store personal data.
 </div>
 
 <hr>
 
-<h2>Participant Session</h2>
+<h2>Individual Expression Check</h2>
 
-<input id="pid" placeholder="Participant ID (required)">
+<select id="context">
+  <option value="interview">Interview</option>
+  <option value="work">Workplace</option>
+  <option value="training">Training Program</option>
+</select>
+
+<input id="participant" placeholder="Participant ID (optional)">
 <textarea id="response" placeholder="Describe a responsibility you handled."></textarea>
-<button onclick="evaluate()">Submit Session</button>
 
-<div id="privateFeedback"></div>
+<button onclick="evaluate()">Evaluate Response</button>
+
+<div id="privateResult"></div>
 
 <hr>
 
-<h2>Trainer View (Trend Summary)</h2>
+<h2>Program View (Aggregated)</h2>
 
 <table>
 <thead>
 <tr>
 <th>Participant</th>
-<th>Recall Trend</th>
-<th>Precision Trend</th>
-<th>Overall Status</th>
+<th>Recall Stability</th>
+<th>Word Precision</th>
+<th>Pressure Signal</th>
+<th>Support Indicator</th>
 </tr>
 </thead>
-<tbody id="trainerTable"></tbody>
+<tbody id="programTable"></tbody>
 </table>
 
 </div>
 
 <script>
-/* ================= CORE DATA ================= */
+/* ================= LANGUAGE INTELLIGENCE CORE ================= */
 
-const weakWords={
+const weakWords = {
   "do":"handle","did":"handled","thing":"task","things":"responsibilities",
   "make":"create","fix":"resolve","help":"assist","get":"obtain",
   "work":"execute","worked":"contributed"
 };
 
 let startTime=null;
-let history=JSON.parse(localStorage.getItem("li-history"))||{};
+let programData=[];
 
 /* ================= TIMER ================= */
 response.addEventListener("focus",()=>{
   if(!startTime) startTime=Date.now();
 });
 
-/* ================= EVALUATE ================= */
+/* ================= EVALUATION ================= */
 function evaluate(){
-  const id=pid.value.trim();
   const text=response.value.trim().toLowerCase();
-  if(!id||!text||!startTime)return;
+  if(!text||!startTime) return;
 
+  const id=participant.value||"Anonymous";
   const time=(Date.now()-startTime)/1000;
   const words=text.split(/\s+/);
 
   let weakCount=0;
-  words.forEach(w=>{if(weakWords[w])weakCount++;});
+  words.forEach(w=>{ if(weakWords[w]) weakCount++; });
 
-  const recall=time<4?"Stable":time<8?"Moderate":"Unstable";
-  const precision=weakCount===0?"Clear":weakCount<=2?"Developing":"Weak";
+  const recall =
+    time<4?"Stable":
+    time<8?"Moderate":"Unstable";
 
-  if(!history[id])history[id]=[];
-  history[id].push({recall,precision});
-  localStorage.setItem("li-history",JSON.stringify(history));
+  const precision =
+    weakCount===0?"Clear":
+    weakCount<=2?"Developing":"Weak";
 
-  privateFeedback.innerHTML=`
+  const pressure =
+    (time>8 && weakCount>2)?"High":
+    (time>4)?"Medium":"Low";
+
+  const support =
+    (recall==="Unstable"||precision==="Weak")?"Required":"Not Required";
+
+  programData.push({id,recall,precision,pressure,support});
+  renderProgram();
+
+  privateResult.innerHTML=`
     <div class="card">
       <b>Private Feedback</b><br>
-      Recall: ${recall}<br>
-      Precision: ${precision}
+      Recall Stability: ${recall}<br>
+      Word Precision: ${precision}<br>
+      Pressure Signal: ${pressure}<br>
+      Support Recommendation: ${support}
     </div>
   `;
 
   response.value="";
-  pid.value="";
+  participant.value="";
   startTime=null;
-  renderTrainer();
 }
 
-/* ================= TREND LOGIC ================= */
-function trend(values){
-  if(values.length<2)return "Baseline";
-  const last=values[values.length-1];
-  const prev=values[values.length-2];
-  if(last===prev)return "Stable";
-  if((prev==="Unstable"||prev==="Developing") &&
-     (last==="Moderate"||last==="Clear"))return "Improving";
-  return "Needs Support";
-}
-
-/* ================= TRAINER VIEW ================= */
-function renderTrainer(){
-  trainerTable.innerHTML="";
-  Object.keys(history).forEach(id=>{
-    const recalls=history[id].map(x=>x.recall);
-    const precisions=history[id].map(x=>x.precision);
-
-    const rTrend=trend(recalls);
-    const pTrend=trend(precisions);
-
-    let status="Stable";
-    if(rTrend==="Improving"||pTrend==="Improving")status="Improving";
-    if(rTrend==="Needs Support"||pTrend==="Needs Support")status="Needs Support";
-
+/* ================= PROGRAM TABLE ================= */
+function renderProgram(){
+  programTable.innerHTML="";
+  programData.forEach(r=>{
     const tr=document.createElement("tr");
     tr.innerHTML=`
-      <td>${id}</td>
-      <td>${rTrend}</td>
-      <td>${pTrend}</td>
-      <td class="${
-        status==="Improving"?"good":
-        status==="Stable"?"mid":"low"
-      }">${status}</td>
+      <td>${r.id}</td>
+      <td>${r.recall}</td>
+      <td>${r.precision}</td>
+      <td>${r.pressure}</td>
+      <td class="${r.support==="Required"?"low":"good"}">${r.support}</td>
     `;
-    trainerTable.appendChild(tr);
+    programTable.appendChild(tr);
   });
 }
-
-renderTrainer();
 </script>
 
 </body>
