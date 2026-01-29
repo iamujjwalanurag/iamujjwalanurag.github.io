@@ -2,197 +2,200 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Language Intelligence Engine v100</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Colleague Job Portal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{
-  font-family: system-ui, sans-serif;
-  background:#f2f4f7;
-  padding:20px;
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
+body{background:#fff;color:#111}
+
+header{
+  padding:20px 40px;
+  border-bottom:1px solid #eee;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
-.app{
-  max-width:1100px;
-  margin:auto;
-  background:#fff;
+
+button{
+  background:#111;
+  color:#fff;
+  border:none;
+  padding:10px 14px;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+input,select{
+  padding:10px;
+  border:1px solid #ddd;
+  border-radius:6px;
+  width:100%;
+}
+
+.container{max-width:1100px;margin:30px auto;padding:0 20px}
+
+.hidden{display:none}
+
+nav button{margin-left:10px}
+
+.jobs{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:20px;
+}
+
+.job{
+  border:1px solid #eee;
   padding:20px;
   border-radius:10px;
 }
-h1,h2{
+
+.job h3{margin-bottom:5px}
+.job p{font-size:14px;color:#444;margin:10px 0}
+
+form{
+  border:1px solid #eee;
+  padding:20px;
+  border-radius:10px;
+  margin-bottom:30px;
+}
+
+form h2{margin-bottom:15px}
+
+footer{
   text-align:center;
+  padding:20px;
+  border-top:1px solid #eee;
+  color:#777;
+  margin-top:60px;
 }
-p.sub{
-  text-align:center;
-  font-size:14px;
-  color:#555;
-}
-.notice{
-  background:#eef3ff;
-  padding:12px;
-  border-radius:6px;
-  font-size:13px;
-  margin-bottom:10px;
-}
-textarea,input,select,button{
-  width:100%;
-  padding:12px;
-  margin-top:8px;
-  font-size:15px;
-}
-button{
-  background:#000;
-  color:#fff;
-  border:none;
-  cursor:pointer;
-}
-.card{
-  background:#fafafa;
-  padding:12px;
-  border-radius:6px;
-  margin-top:12px;
-}
-table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:12px;
-}
-th,td{
-  padding:10px;
-  border-bottom:1px solid #ddd;
-  font-size:14px;
-}
-.good{color:#2e7d32;}
-.mid{color:#f9a825;}
-.low{color:#c62828;}
-.small{font-size:13px;color:#666;}
 </style>
 </head>
 
 <body>
 
-<div class="app">
+<header>
+  <h1>Colleague Jobs</h1>
+  <nav>
+    <span id="userStatus">Guest</span>
+    <button onclick="showLogin()">Login</button>
+    <button onclick="logout()">Logout</button>
+  </nav>
+</header>
 
-<h1>Language Intelligence Engine</h1>
-<p class="sub">Version 100 · Confidence Readiness Infrastructure</p>
+<div class="container">
 
-<div class="notice">
-This system observes expression readiness under pressure.  
-It does not score English, rank people, or store personal data.
+<!-- LOGIN -->
+<form id="loginBox" class="hidden">
+  <h2>Login</h2>
+  <select id="role">
+    <option value="candidate">Candidate</option>
+    <option value="employer">Employer</option>
+  </select><br><br>
+  <input placeholder="Your Name" id="username"><br><br>
+  <button type="button" onclick="login()">Login</button>
+</form>
+
+<!-- POST JOB -->
+<form id="postJob" class="hidden">
+  <h2>Post a Job (Employer)</h2>
+  <input placeholder="Job Title" id="jTitle"><br><br>
+  <input placeholder="Company" id="jCompany"><br><br>
+  <input placeholder="Location" id="jLocation"><br><br>
+  <input placeholder="Description" id="jDesc"><br><br>
+  <button type="button" onclick="addJob()">Post Job</button>
+</form>
+
+<!-- SEARCH -->
+<div style="display:flex;gap:10px;margin-bottom:20px">
+  <input placeholder="Search job title" id="search">
+  <input placeholder="Location" id="filterLocation">
+  <button onclick="filterJobs()">Search</button>
 </div>
 
-<hr>
-
-<h2>Individual Expression Check</h2>
-
-<select id="context">
-  <option value="interview">Interview</option>
-  <option value="work">Workplace</option>
-  <option value="training">Training Program</option>
-</select>
-
-<input id="participant" placeholder="Participant ID (optional)">
-<textarea id="response" placeholder="Describe a responsibility you handled."></textarea>
-
-<button onclick="evaluate()">Evaluate Response</button>
-
-<div id="privateResult"></div>
-
-<hr>
-
-<h2>Program View (Aggregated)</h2>
-
-<table>
-<thead>
-<tr>
-<th>Participant</th>
-<th>Recall Stability</th>
-<th>Word Precision</th>
-<th>Pressure Signal</th>
-<th>Support Indicator</th>
-</tr>
-</thead>
-<tbody id="programTable"></tbody>
-</table>
+<!-- JOB LIST -->
+<div class="jobs" id="jobList"></div>
 
 </div>
+
+<footer>
+© 2026 Colleague.co.in — Confidence to Careers
+</footer>
 
 <script>
-/* ================= LANGUAGE INTELLIGENCE CORE ================= */
+let currentUser=null;
+let currentRole=null;
 
-const weakWords = {
-  "do":"handle","did":"handled","thing":"task","things":"responsibilities",
-  "make":"create","fix":"resolve","help":"assist","get":"obtain",
-  "work":"execute","worked":"contributed"
-};
+let jobs=[
+  {title:"Frontend Developer",company:"TechSoft",location:"Remote",desc:"HTML CSS JS"},
+  {title:"HR Executive",company:"PeopleFirst",location:"Delhi",desc:"Hiring & HR ops"},
+  {title:"Backend Developer",company:"CodeWorks",location:"Bangalore",desc:"Node APIs"}
+];
 
-let startTime=null;
-let programData=[];
-
-/* ================= TIMER ================= */
-response.addEventListener("focus",()=>{
-  if(!startTime) startTime=Date.now();
-});
-
-/* ================= EVALUATION ================= */
-function evaluate(){
-  const text=response.value.trim().toLowerCase();
-  if(!text||!startTime) return;
-
-  const id=participant.value||"Anonymous";
-  const time=(Date.now()-startTime)/1000;
-  const words=text.split(/\s+/);
-
-  let weakCount=0;
-  words.forEach(w=>{ if(weakWords[w]) weakCount++; });
-
-  const recall =
-    time<4?"Stable":
-    time<8?"Moderate":"Unstable";
-
-  const precision =
-    weakCount===0?"Clear":
-    weakCount<=2?"Developing":"Weak";
-
-  const pressure =
-    (time>8 && weakCount>2)?"High":
-    (time>4)?"Medium":"Low";
-
-  const support =
-    (recall==="Unstable"||precision==="Weak")?"Required":"Not Required";
-
-  programData.push({id,recall,precision,pressure,support});
-  renderProgram();
-
-  privateResult.innerHTML=`
-    <div class="card">
-      <b>Private Feedback</b><br>
-      Recall Stability: ${recall}<br>
-      Word Precision: ${precision}<br>
-      Pressure Signal: ${pressure}<br>
-      Support Recommendation: ${support}
-    </div>
-  `;
-
-  response.value="";
-  participant.value="";
-  startTime=null;
+function showLogin(){
+  document.getElementById("loginBox").classList.toggle("hidden");
 }
 
-/* ================= PROGRAM TABLE ================= */
-function renderProgram(){
-  programTable.innerHTML="";
-  programData.forEach(r=>{
-    const tr=document.createElement("tr");
-    tr.innerHTML=`
-      <td>${r.id}</td>
-      <td>${r.recall}</td>
-      <td>${r.precision}</td>
-      <td>${r.pressure}</td>
-      <td class="${r.support==="Required"?"low":"good"}">${r.support}</td>
-    `;
-    programTable.appendChild(tr);
+function login(){
+  currentUser=username.value;
+  currentRole=role.value;
+  userStatus.innerText=currentUser+" ("+currentRole+")";
+  loginBox.classList.add("hidden");
+  if(currentRole==="employer") postJob.classList.remove("hidden");
+}
+
+function logout(){
+  currentUser=null;
+  currentRole=null;
+  userStatus.innerText="Guest";
+  postJob.classList.add("hidden");
+}
+
+function addJob(){
+  jobs.push({
+    title:jTitle.value,
+    company:jCompany.value,
+    location:jLocation.value,
+    desc:jDesc.value
+  });
+  alert("Job posted successfully");
+  renderJobs(jobs);
+}
+
+function apply(title){
+  if(!currentUser){
+    alert("Please login first");
+    return;
+  }
+  alert("Applied for "+title+" 🎉");
+}
+
+function filterJobs(){
+  const s=search.value.toLowerCase();
+  const l=filterLocation.value.toLowerCase();
+  const filtered=jobs.filter(j=>
+    j.title.toLowerCase().includes(s) &&
+    j.location.toLowerCase().includes(l)
+  );
+  renderJobs(filtered);
+}
+
+function renderJobs(list){
+  jobList.innerHTML="";
+  list.forEach(j=>{
+    jobList.innerHTML+=`
+      <div class="job">
+        <h3>${j.title}</h3>
+        <small>${j.company} • ${j.location}</small>
+        <p>${j.desc}</p>
+        <input type="file"><br><br>
+        <button onclick="apply('${j.title}')">Apply</button>
+      </div>`;
   });
 }
+
+renderJobs(jobs);
 </script>
 
 </body>
