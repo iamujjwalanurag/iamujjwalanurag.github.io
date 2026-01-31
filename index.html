@@ -1,200 +1,217 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Ad Intelligence</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>ROI Engine v∞</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: #e5e7eb;
-      margin: 0;
-      padding: 20px;
-    }
+<style>
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+    background: radial-gradient(circle at top, #020617, #000);
+    color: #e5e7eb;
+  }
 
-    h1 {
-      text-align: center;
-      color: #38bdf8;
-    }
+  .app {
+    max-width: 1100px;
+    margin: auto;
+    padding: 30px;
+  }
 
-    .container {
-      max-width: 900px;
-      margin: auto;
-    }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 
-    .card {
-      background: #020617;
-      border-radius: 10px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.4);
-    }
+  .version {
+    font-size: 14px;
+    color: #38bdf8;
+    border: 1px solid #38bdf8;
+    padding: 6px 12px;
+    border-radius: 999px;
+  }
 
-    label {
-      display: block;
-      margin-top: 10px;
-      font-size: 14px;
-    }
+  h1 {
+    font-size: 36px;
+    margin: 20px 0 5px;
+  }
 
-    input, select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border-radius: 6px;
-      border: none;
-      outline: none;
-    }
+  .subtitle {
+    color: #94a3b8;
+    margin-bottom: 30px;
+  }
 
-    button {
-      margin-top: 15px;
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 6px;
-      background: #38bdf8;
-      color: #020617;
-      font-weight: bold;
-      cursor: pointer;
-    }
+  .card {
+    background: #020617;
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 30px 80px rgba(0,0,0,.5);
+  }
 
-    .metrics {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 15px;
-    }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+  }
 
-    .metric {
-      background: #020617;
-      padding: 15px;
-      border-radius: 8px;
-      text-align: center;
-    }
+  input {
+    width: 100%;
+    padding: 12px;
+    background: #000;
+    color: #fff;
+    border-radius: 8px;
+    border: 1px solid #1e293b;
+  }
 
-    .metric h3 {
-      margin: 5px 0;
-      color: #38bdf8;
-    }
+  button {
+    margin-top: 15px;
+    padding: 14px;
+    width: 100%;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(90deg, #38bdf8, #22c55e);
+    font-weight: bold;
+    cursor: pointer;
+  }
 
-    .insight {
-      margin-top: 10px;
-      padding: 10px;
-      background: #020617;
-      border-left: 4px solid #38bdf8;
-      border-radius: 5px;
-    }
+  .score {
+    font-size: 72px;
+    font-weight: 800;
+    text-align: center;
+    margin: 20px 0;
+    background: linear-gradient(90deg, #38bdf8, #22c55e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
 
-    .score {
-      font-size: 32px;
-      font-weight: bold;
-      color: #22c55e;
-    }
-  </style>
+  .decision {
+    text-align: center;
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .insight {
+    background: #000;
+    padding: 12px;
+    border-left: 4px solid #38bdf8;
+    border-radius: 8px;
+    margin-top: 10px;
+  }
+</style>
 </head>
 
 <body>
+<div class="app">
 
-<div class="container">
-  <h1>Ad Performance Intelligence MVP</h1>
-
-  <!-- Campaign Input -->
-  <div class="card">
-    <h2>Add Campaign Data</h2>
-
-    <label>Platform</label>
-    <select id="platform">
-      <option>Google Ads</option>
-      <option>Meta Ads</option>
-      <option>LinkedIn Ads</option>
-    </select>
-
-    <label>Ad Spend (₹)</label>
-    <input type="number" id="spend">
-
-    <label>Impressions</label>
-    <input type="number" id="impressions">
-
-    <label>Clicks</label>
-    <input type="number" id="clicks">
-
-    <label>Leads / Sales</label>
-    <input type="number" id="leads">
-
-    <button onclick="analyze()">Analyze Campaign</button>
+  <div class="header">
+    <div>
+      <h1>ROI Engine</h1>
+      <div class="subtitle">Adaptive Intelligence System</div>
+    </div>
+    <div class="version">v∞</div>
   </div>
 
-  <!-- Dashboard -->
+  <!-- INPUT -->
   <div class="card">
-    <h2>Dashboard</h2>
-
-    <div class="metrics">
-      <div class="metric">
-        <p>CPC</p>
-        <h3 id="cpc">₹0</h3>
-      </div>
-      <div class="metric">
-        <p>CPL</p>
-        <h3 id="cpl">₹0</h3>
-      </div>
-      <div class="metric">
-        <p>CTR</p>
-        <h3 id="ctr">0%</h3>
-      </div>
-      <div class="metric">
-        <p>ROI Score</p>
-        <div class="score" id="roiScore">0</div>
-      </div>
+    <h3>Campaign Input</h3>
+    <div class="grid">
+      <input id="spend" placeholder="Ad Spend (₹)">
+      <input id="impressions" placeholder="Impressions">
+      <input id="clicks" placeholder="Clicks">
+      <input id="leads" placeholder="Leads / Sales">
     </div>
+    <button onclick="runEngine()">Run Intelligence</button>
+  </div>
 
+  <!-- OUTPUT -->
+  <div class="card">
+    <div class="score" id="score">—</div>
+    <div class="decision" id="decision">Waiting for data</div>
     <div id="insights"></div>
   </div>
+
 </div>
 
 <script>
-  function analyze() {
-    const spend = Number(document.getElementById("spend").value);
-    const impressions = Number(document.getElementById("impressions").value);
-    const clicks = Number(document.getElementById("clicks").value);
-    const leads = Number(document.getElementById("leads").value);
+/* ===============================
+   ENGINE REGISTRY (∞ READY)
+================================ */
+const engines = [
+  efficiencyEngine,
+  conversionEngine,
+  realityCheckEngine
+];
 
-    if (!spend || !impressions || !clicks) {
-      alert("Please fill all required fields");
-      return;
-    }
+/* ===============================
+   CORE RUNNER
+================================ */
+function runEngine() {
+  const data = {
+    spend: +spend.value,
+    impressions: +impressions.value,
+    clicks: +clicks.value,
+    leads: +leads.value
+  };
 
-    const cpc = spend / clicks;
-    const cpl = leads ? spend / leads : spend;
-    const ctr = (clicks / impressions) * 100;
+  let totalScore = 0;
+  let insights = [];
 
-    // ROI Score (simple logic)
-    let score = 100;
-    if (ctr < 1) score -= 30;
-    if (cpc > 20) score -= 20;
-    if (leads === 0) score -= 30;
+  engines.forEach(engine => {
+    const result = engine(data);
+    totalScore += result.score;
+    insights.push(result.message);
+  });
 
-    score = Math.max(score, 10);
+  totalScore = Math.min(Math.round(totalScore), 100);
 
-    document.getElementById("cpc").innerText = "₹" + cpc.toFixed(2);
-    document.getElementById("cpl").innerText = "₹" + cpl.toFixed(2);
-    document.getElementById("ctr").innerText = ctr.toFixed(2) + "%";
-    document.getElementById("roiScore").innerText = score;
+  document.getElementById("score").innerText = totalScore;
+  document.getElementById("decision").innerText = decisionText(totalScore);
 
-    const insights = document.getElementById("insights");
-    insights.innerHTML = "";
-
-    if (ctr < 1) addInsight("Low CTR detected. Improve creatives & messaging.");
-    if (cpc > 20) addInsight("High CPC. Narrow audience targeting.");
-    if (leads === 0) addInsight("No conversions. Check landing page.");
-    if (score > 70) addInsight("Campaign is performing well. Scale gradually.");
-  }
-
-  function addInsight(text) {
+  const insightBox = document.getElementById("insights");
+  insightBox.innerHTML = "";
+  insights.forEach(msg => {
     const div = document.createElement("div");
     div.className = "insight";
-    div.innerText = text;
-    document.getElementById("insights").appendChild(div);
-  }
+    div.innerText = msg;
+    insightBox.appendChild(div);
+  });
+}
+
+/* ===============================
+   ENGINES (ADD FOREVER ♾️)
+================================ */
+
+function efficiencyEngine(d) {
+  const ctr = (d.clicks / d.impressions) * 100 || 0;
+  if (ctr < 1)
+    return { score: 20, message: "Creative efficiency is weak." };
+  return { score: 35, message: "Creative efficiency is healthy." };
+}
+
+function conversionEngine(d) {
+  if (d.leads === 0)
+    return { score: 15, message: "No conversions detected." };
+  return { score: 35, message: "Conversion flow is working." };
+}
+
+function realityCheckEngine(d) {
+  if (d.spend > 0 && d.leads === 0)
+    return { score: 0, message: "Spend without results detected." };
+  return { score: 30, message: "Spend is justified by outcomes." };
+}
+
+/* ===============================
+   DECISION LAYER
+================================ */
+function decisionText(score) {
+  if (score >= 85) return "🚀 Auto-scale recommended";
+  if (score >= 65) return "📈 Optimize & scale";
+  if (score >= 45) return "⚠️ Fix critical issues";
+  return "❌ Stop or rebuild campaign";
+}
 </script>
 
 </body>
