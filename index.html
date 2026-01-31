@@ -1,265 +1,200 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Colleague – Jobs & Confidence</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>Unique Ad Group – Ad Intelligence MVP</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-:root{
-  --primary:#4f46e5;
-  --bg:#f8fafc;
-  --card:#ffffff;
-  --text:#0f172a;
-  --muted:#64748b;
-}
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      margin: 0;
+      padding: 20px;
+    }
 
-*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,system-ui}
+    h1 {
+      text-align: center;
+      color: #38bdf8;
+    }
 
-body{
-  background:var(--bg);
-  color:var(--text);
-}
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
 
-header{
-  background:#fff;
-  padding:16px 30px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  border-bottom:1px solid #e5e7eb;
-  position:sticky;
-  top:0;
-}
+    .card {
+      background: #020617;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    }
 
-header b{
-  font-size:20px;
-  color:var(--primary);
-}
+    label {
+      display: block;
+      margin-top: 10px;
+      font-size: 14px;
+    }
 
-nav button{
-  margin-left:8px;
-}
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 6px;
+      border: none;
+      outline: none;
+    }
 
-button{
-  background:var(--primary);
-  color:#fff;
-  border:none;
-  padding:10px 16px;
-  border-radius:8px;
-  font-weight:500;
-  cursor:pointer;
-}
+    button {
+      margin-top: 15px;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      background: #38bdf8;
+      color: #020617;
+      font-weight: bold;
+      cursor: pointer;
+    }
 
-button.secondary{
-  background:#e0e7ff;
-  color:var(--primary);
-}
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+    }
 
-input,select,textarea{
-  width:100%;
-  padding:12px;
-  border-radius:8px;
-  border:1px solid #e5e7eb;
-  margin-top:10px;
-}
+    .metric {
+      background: #020617;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+    }
 
-.container{
-  max-width:1100px;
-  margin:40px auto;
-  padding:0 20px;
-}
+    .metric h3 {
+      margin: 5px 0;
+      color: #38bdf8;
+    }
 
-.hero{
-  background:linear-gradient(135deg,#6366f1,#4f46e5);
-  color:#fff;
-  padding:50px;
-  border-radius:20px;
-  margin-bottom:40px;
-}
+    .insight {
+      margin-top: 10px;
+      padding: 10px;
+      background: #020617;
+      border-left: 4px solid #38bdf8;
+      border-radius: 5px;
+    }
 
-.hero h1{font-size:36px;margin-bottom:10px}
-.hero p{opacity:.9}
-
-.grid{
-  display:grid;
-  grid-template-columns:2fr 1fr;
-  gap:30px;
-}
-
-.card{
-  background:var(--card);
-  padding:24px;
-  border-radius:16px;
-  box-shadow:0 10px 30px rgba(0,0,0,.05);
-  margin-bottom:25px;
-}
-
-.job{
-  border:1px solid #e5e7eb;
-  padding:20px;
-  border-radius:14px;
-  margin-bottom:20px;
-}
-
-.job.featured{
-  border:2px solid var(--primary);
-}
-
-.job h3{margin-bottom:6px}
-.job small{color:var(--muted)}
-.job p{margin:10px 0;color:#334155}
-
-.hidden{display:none}
-
-footer{
-  text-align:center;
-  padding:30px;
-  color:var(--muted);
-  margin-top:60px;
-}
-
-@media(max-width:900px){
-  .grid{grid-template-columns:1fr}
-}
-</style>
+    .score {
+      font-size: 32px;
+      font-weight: bold;
+      color: #22c55e;
+    }
+  </style>
 </head>
 
 <body>
 
-<header>
-  <b>Colleague</b>
-  <div>
-    <span id="userLabel">Guest</span>
-    <button class="secondary" onclick="toggleLogin()">Login</button>
-    <button onclick="logout()">Logout</button>
-  </div>
-</header>
-
 <div class="container">
+  <h1>Ad Performance Intelligence MVP</h1>
 
-<div class="hero">
-  <h1>Find Jobs with Confidence</h1>
-  <p>Simple words. Clear interviews. Better careers.</p>
+  <!-- Campaign Input -->
+  <div class="card">
+    <h2>Add Campaign Data</h2>
+
+    <label>Platform</label>
+    <select id="platform">
+      <option>Google Ads</option>
+      <option>Meta Ads</option>
+      <option>LinkedIn Ads</option>
+    </select>
+
+    <label>Ad Spend (₹)</label>
+    <input type="number" id="spend">
+
+    <label>Impressions</label>
+    <input type="number" id="impressions">
+
+    <label>Clicks</label>
+    <input type="number" id="clicks">
+
+    <label>Leads / Sales</label>
+    <input type="number" id="leads">
+
+    <button onclick="analyze()">Analyze Campaign</button>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="card">
+    <h2>Dashboard</h2>
+
+    <div class="metrics">
+      <div class="metric">
+        <p>CPC</p>
+        <h3 id="cpc">₹0</h3>
+      </div>
+      <div class="metric">
+        <p>CPL</p>
+        <h3 id="cpl">₹0</h3>
+      </div>
+      <div class="metric">
+        <p>CTR</p>
+        <h3 id="ctr">0%</h3>
+      </div>
+      <div class="metric">
+        <p>ROI Score</p>
+        <div class="score" id="roiScore">0</div>
+      </div>
+    </div>
+
+    <div id="insights"></div>
+  </div>
 </div>
-
-<div class="grid">
-
-<!-- LEFT -->
-<div>
-
-<div class="card">
-  <input id="search" placeholder="Search job title">
-  <button style="margin-top:10px" onclick="searchJobs()">Search</button>
-</div>
-
-<div id="jobs"></div>
-
-</div>
-
-<!-- RIGHT -->
-<div>
-
-<div id="loginBox" class="card hidden">
-  <h3>Login</h3>
-  <input id="name" placeholder="Your name">
-  <select id="role">
-    <option value="candidate">Candidate</option>
-    <option value="employer">Employer</option>
-    <option value="admin">Admin</option>
-  </select>
-  <button style="margin-top:10px" onclick="login()">Continue</button>
-</div>
-
-<div id="postJob" class="card hidden">
-  <h3>Post a Job</h3>
-  <input id="title" placeholder="Job title">
-  <input id="company" placeholder="Company">
-  <input id="location" placeholder="Location">
-  <textarea id="desc" placeholder="Job description"></textarea>
-  <button style="margin-top:10px" onclick="addJob()">Post Job</button>
-</div>
-
-<div class="card">
-  <h3>Interview Confidence</h3>
-  <p><b>HR Question:</b> Tell me about yourself</p>
-  <p class="muted">They want a short story about your skills.</p>
-  <hr style="margin:15px 0">
-  <p><b>HR Word:</b> Strengths</p>
-  <p class="muted">Things you do well at work.</p>
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<footer>
-© 2026 Colleague.co.in
-</footer>
 
 <script>
-let user=null,role=null;
-let jobs=JSON.parse(localStorage.getItem("jobs"))||[
-  {title:"Frontend Developer",company:"TechSoft",location:"Remote",desc:"HTML CSS JS",featured:true},
-  {title:"HR Executive",company:"PeopleFirst",location:"Delhi",desc:"Hiring",featured:false}
-];
+  function analyze() {
+    const spend = Number(document.getElementById("spend").value);
+    const impressions = Number(document.getElementById("impressions").value);
+    const clicks = Number(document.getElementById("clicks").value);
+    const leads = Number(document.getElementById("leads").value);
 
-function toggleLogin(){loginBox.classList.toggle("hidden")}
+    if (!spend || !impressions || !clicks) {
+      alert("Please fill all required fields");
+      return;
+    }
 
-function login(){
-  user=name.value; role=roleSelect=role=document.getElementById("role").value;
-  userLabel.innerText=user+" ("+role+")";
-  loginBox.classList.add("hidden");
-  if(role==="employer") postJob.classList.remove("hidden");
-  render(jobs);
-}
+    const cpc = spend / clicks;
+    const cpl = leads ? spend / leads : spend;
+    const ctr = (clicks / impressions) * 100;
 
-function logout(){
-  user=null; role=null;
-  userLabel.innerText="Guest";
-  postJob.classList.add("hidden");
-}
+    // ROI Score (simple logic)
+    let score = 100;
+    if (ctr < 1) score -= 30;
+    if (cpc > 20) score -= 20;
+    if (leads === 0) score -= 30;
 
-function addJob(){
-  jobs.push({title:title.value,company:company.value,location:location.value,desc:desc.value,featured:false});
-  save(); render(jobs);
-}
+    score = Math.max(score, 10);
 
-function apply(t){
-  if(!user){alert("Login first");return;}
-  alert("Applied to "+t+" 🎉");
-}
+    document.getElementById("cpc").innerText = "₹" + cpc.toFixed(2);
+    document.getElementById("cpl").innerText = "₹" + cpl.toFixed(2);
+    document.getElementById("ctr").innerText = ctr.toFixed(2) + "%";
+    document.getElementById("roiScore").innerText = score;
 
-function feature(i){
-  jobs[i].featured=true;
-  save(); render(jobs);
-}
+    const insights = document.getElementById("insights");
+    insights.innerHTML = "";
 
-function searchJobs(){
-  let q=search.value.toLowerCase();
-  render(jobs.filter(j=>j.title.toLowerCase().includes(q)));
-}
+    if (ctr < 1) addInsight("Low CTR detected. Improve creatives & messaging.");
+    if (cpc > 20) addInsight("High CPC. Narrow audience targeting.");
+    if (leads === 0) addInsight("No conversions. Check landing page.");
+    if (score > 70) addInsight("Campaign is performing well. Scale gradually.");
+  }
 
-function render(list){
-  jobsDiv.innerHTML="";
-  list.forEach((j,i)=>{
-    jobsDiv.innerHTML+=`
-    <div class="job ${j.featured?'featured':''}">
-      <h3>${j.title}</h3>
-      <small>${j.company} • ${j.location}</small>
-      <p>${j.desc}</p>
-      <input type="file">
-      <button onclick="apply('${j.title}')">Apply</button>
-      ${role==="admin"?`<button class="secondary" onclick="feature(${i})">Feature</button>`:""}
-    </div>`;
-  });
-}
-
-function save(){localStorage.setItem("jobs",JSON.stringify(jobs))}
-const jobsDiv=document.getElementById("jobs");
-render(jobs);
+  function addInsight(text) {
+    const div = document.createElement("div");
+    div.className = "insight";
+    div.innerText = text;
+    document.getElementById("insights").appendChild(div);
+  }
 </script>
 
 </body>
